@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html>
+    <head lang="en">
+        <meta charset="UTF-8">
+        <title>StarPets - {% block title %}{% endblock %}</title>
+        <link rel="stylesheet" href="{% static 'css/starpets.css' %}">
+    </head>
+    <body>
+        <nav>
+            <h1><strong>StarPets</strong></h1>
+            <ul>
+                <li><a href="{% url 'pets:home' %}">Home</a></li>
+                <li><a href=>Top Pets</a></li>
+                <li><a href=>Categories</a></li>
+                <li><a href=>Bookmarks</a></li>
+                <li><a href=>Upload Pet</a></li>
+            </ul>
+            <div class="user-status"> Not Logged In</div>
+        
+        </nav>
+        <hr>
+
+        <div>
+            {% block content %}
+            {% endblock %}
+        </div>
+
+        <div class="footer">
+            <hr>
+            <footer>© 2026 Star Pets </footer>
+            <hr>
+        </div>
+    </body>
+</html>

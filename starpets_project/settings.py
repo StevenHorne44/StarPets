@@ -58,7 +58,7 @@ ROOT_URLCONF = 'starpets_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [TEMPLATE_DIR, ],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -119,8 +119,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 # Static files (CSS, JavaScript, Images)
-STATICFILES_DIRS = [STATIC_DIR, ]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_URL = '/static/'
+
 
 # Media files (User uploaded photos)
 MEDIA_ROOT = MEDIA_DIR

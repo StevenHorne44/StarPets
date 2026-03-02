@@ -1,0 +1,61 @@
+.main-header {
+    text-align: center;
+    
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: lightgrey;
+    
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+    gap: 40px;
+}
+
+nav a {
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+}
+
+
+
+
+.login-btn {
+    background-color: #3b82f6; 
+    color: white;
+    border:none;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.register-btn {
+    background-color: #10b981; 
+    color: white;
+    border:none;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.btn-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+
+
+.footer {
+    text-align: center;
+    background-color: lightgray;
+}
+
+.footer footer {
+    font-family: "Open Sans", sans-serif;
+}
