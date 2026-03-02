@@ -1,0 +1,6 @@
+asgiref==3.11.1
+Django==5.2.11
+packaging @ file:///C:/miniconda3/conda-bld/packaging_1761049096285/work
+pillow==12.1.1
+sqlparse==0.5.5
+tzdata==2025.3
