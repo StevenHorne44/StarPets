@@ -12,10 +12,10 @@
             <h1><strong>StarPets</strong></h1>
             <ul>
                 <li><a href="{% url 'pets:home' %}">Home</a></li>
-                <li><a href=>Top Pets</a></li>
-                <li><a href=>Categories</a></li>
-                <li><a href=>Bookmarks</a></li>
-                <li><a href=>Upload Pet</a></li>
+                <li><a href="{% url 'pets:top_pets' %}">Top Pets</a></li>
+                <li><a href="{% url 'pets:categories' %}">Categories</a></li>
+                <li><a href="{% url 'pets:bookmarks' %}">Bookmarks</a></li>
+                <li><a href="{% url 'pets:upload' %}">Upload Pet</a></li>
             </ul>
             <div class="user-status"> Not Logged In</div>
         

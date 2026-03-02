@@ -1,6 +1,12 @@
-.main-header {
+.home-header {
     text-align: center;
-    
+}
+
+.main-header {
+    text-align: left;
+    border-color: #3b82f6;
+    border-width: 2px;
+    border-style: solid;
 }
 
 nav {
