@@ -1,5 +1,7 @@
 from django.contrib import admin
-from pets.models import Category, Pet
+from pets.models import Bookmark, PetType, Pet, PetRating
 
-admin.site.register(Category)
+admin.site.register(PetType)
 admin.site.register(Pet)
+admin.site.register(PetRating)  
+admin.site.register(Bookmark)
