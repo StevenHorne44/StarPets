@@ -22,8 +22,8 @@ def bookmarks(request):
 def upload_pets(request):
     return render(request, 'pets/upload.html')
 
-def register(request):
-    return render(request, 'pets/register.html')
+def sign_up(request):
+    return render(request, 'pets/signup.html')
 
 def login(request):
     return render(request, 'pets/login.html')

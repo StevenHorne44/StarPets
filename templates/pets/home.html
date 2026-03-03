@@ -1,11 +1,28 @@
 {% extends 'pets/base.html' %}
+{% load static %}
 
 {% block title %}Home{% endblock %}
 
 {% block content %}
-    <h1 class="home-header">Welcome to StarPets!</h1>
-    <div>
+    <div class="home-container">
+        <h1>Welcome to StarPets!</h1>
+        <p> DESCRIPTION HERE </p>
+    </div>
+    
 
+    <div class="feature-container">
+        <div class="feature-box">
+            <h2>Feature 1</h2>
+            <p>Feature 1 description goes here.</p>
+        </div>
+        <div class="feature-box">
+            <h2>Feature 2</h2>
+            <p>Feature 2 description goes here.</p>
+        </div>
+        <div class="feature-box">
+            <h2>Feature 3</h2>
+            <p>Feature 3 description goes here.</p>
+        </div>  
     </div>
 
     <div class="btn-container">
