@@ -7,22 +7,29 @@
     <div class = "login-container">
         <h1>Login to your StarPet account</h1>
 
-        <form id="login_form" method="post" action="">
-            {% csrf_token %} <fieldset>
-                <div class = "form-group">
-                    <label for="username">Username</label>
-                    <input type="text" id = "username" name="username" required>
-                </div>
+        <form method="post">
+            {% csrf_token %}
 
-                <div class = "form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id = "password" name="password" required>
-                </div>
+            {% if form.errors %}
+                <p style="color: red;">
+                    Your username and password didn't match. Please try again.
+                </p>
+            {% endif %}
 
-                <button type = "submit" class="login-submit-btn">Login</button>
+            <div class="form-group">
+                <label for="id_username">Username</label>
+                {{ form.username }}
+            </div>
 
-            </fieldset>
+            <div class = "form-group">
+                <label for="id_password">Password</label>
+                {{ form.password }}
+            </div>
+
+            <button type="submit" class="login-submit-btn">Login</button>
         </form>
+
+        <p>Don't have an account? <a href="{% url 'pets:signup' %}">Create an account</a></p>
     </div>
 
 {%endblock %}

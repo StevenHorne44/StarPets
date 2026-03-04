@@ -97,3 +97,46 @@ nav a {
 .footer footer {
     font-family: "Open Sans", sans-serif;
 }
+
+
+/*login/signup pages */
+
+input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; 
+}
+
+.login-submit-btn {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    padding: 14px;
+    font-size: 1.1rem;
+    transition: backround 0.3s;
+}
+
+.login-submit-btn:hover {
+    background-color: #2980b9;
+}
+
+.signup-submit-btn {
+    background-color: #10b981;
+    color: white;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    padding: 14px;
+    font-size: 1.1rem;
+    transition: backround 0.3s;
+}
+
+.signup-submit-btn:hover {
+    background-color: #27ae60;
+}

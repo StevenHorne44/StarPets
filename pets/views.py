@@ -1,5 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login as auth_login
+from django.contrib import messages
+from .forms import ExtendedUserCreationForm
 
 # Create your views here.
 
@@ -23,7 +27,14 @@ def upload_pets(request):
     return render(request, 'pets/upload.html')
 
 def sign_up(request):
-    return render(request, 'pets/signup.html')
+    if request.method == 'POST':
+        form = ExtendedUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            auth_login(request,user)
+            messages.success(request, f"Welcome to StarPets, {user.username}!")
+            return redirect('pets:home')
 
-def login(request):
-    return render(request, 'pets/login.html')
+    else:
+        form = ExtendedUserCreationForm()
+    return render(request, 'pets/signup.html', {'form':form})

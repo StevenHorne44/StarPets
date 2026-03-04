@@ -17,7 +17,13 @@
                 <li><a href="{% url 'pets:bookmarks' %}">Bookmarks</a></li>
                 <li><a href="{% url 'pets:upload' %}">Upload Pet</a></li>
             </ul>
-            <div class="user-status"> Not Logged In</div>
+            <div class="user-status">
+                {% if user.is_authenticated %}
+                    Logged in as: <strong>{{ user.username }}</strong>
+                {% else %}
+                    Not Logged In
+                {% endif %}
+            </div>
         
         </nav>
         <hr>
