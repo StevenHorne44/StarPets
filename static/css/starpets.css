@@ -56,10 +56,20 @@ nav a {
     border:none;
     padding: 5px 10px;
     border-radius: 5px;
+
+}
+
+.login-btn:hover {
+    background-color: #2980b9;
 }
 
 .login-btn, .signup-btn{
     cursor: pointer;
+    transition: backround-color 0.3 ease;
+}
+
+.signup-btn:hover {
+    background-color: #27ae60;
 }
 
 .signup-btn {
@@ -68,6 +78,7 @@ nav a {
     border:none;
     padding: 5px 10px;
     border-radius: 5px;
+
 }
 
 .btn-container {
