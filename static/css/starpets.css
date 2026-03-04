@@ -41,6 +41,7 @@ nav a {
 
 .feature-box {
     border: 1px solid black;
+    background-color: #d1d5db ;
     border-radius: 8px;
     padding: 20px;
     text-align: center;
