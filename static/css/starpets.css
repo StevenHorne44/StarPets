@@ -58,7 +58,11 @@ nav a {
     border-radius: 5px;
 }
 
-.register-btn {
+.login-btn, .signup-btn{
+    cursor: pointer;
+}
+
+.signup-btn {
     background-color: #10b981; 
     color: white;
     border:none;
