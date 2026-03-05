@@ -14,4 +14,5 @@ urlpatterns = [
     path('categories/', views.categories, name='categories'),
     path('bookmark/', views.bookmarks, name='bookmarks'),
     path('upload/', views.upload_pets, name='upload'),
+    path('profile/',views.profile, name='profile'),
 ]
