@@ -18,10 +18,10 @@
                     <li><a href="{% url 'pets:bookmarks' %}">Bookmarks</a></li>
                     <li><a href="{% url 'pets:upload' %}">Upload Pet</a></li>
                 {% else %}
-                    <li><a href="{% url 'pets:home' %}">Top Pets</a></li>
-                    <li><a href="{% url 'pets:home' %}">Categories</a></li>
-                    <li><a href="{% url 'pets:home' %}">Bookmarks</a></li>
-                    <li><a href="{% url 'pets:home' %}">Upload Pet</a></li>
+                    <li><a href="{% url 'pets:login' %}">Top Pets</a></li>
+                    <li><a href="{% url 'pets:login' %}">Categories</a></li>
+                    <li><a href="{% url 'pets:login' %}">Bookmarks</a></li>
+                    <li><a href="{% url 'pets:login' %}">Upload Pet</a></li>
                 {% endif %}
             </ul>
             <div class="user-status">
