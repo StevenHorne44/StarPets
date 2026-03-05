@@ -5,20 +5,39 @@ import django
 django.setup()
 from django.contrib.auth.models import User 
 from pets.models import PetType, Pet, PetRating
+import os
 
 def populate():
+
+    pet_dict = {}
+    photoFolder = "media/PetPhotos"
+
+    for filename in os.listdir(photoFolder):
+        if filename.lower().endswith((".jpg",".png"),".jpeg"):
+            file_key = os.path.splitext(filename)[0]
+            full_path = os.path.join(folder_path,filename)
+
+            pet_dict[file_key] = full_path
+    
+    for name,path in pet_dict.items():
+        print(name,"",path)
 
     dog_type = add_pet_type('Dog')
     cat_type = add_pet_type('Cat')
     bird_type = add_pet_type('Bird')
 
-    user1 = add_user("Steven", "steven@example.com")
-    user2 = add_user("Alexander", "alexander@example.com")
-    
-    pet1 = add_pet(dog_type, user1, "Ralph", "A friendly dog", 5)
-    pet2 = add_pet(cat_type, user2, "Whiskers", "A playful cat", 3)
-    pet3 = add_pet(bird_type, user1, "Tweety", "A cheerful bird", 2)
+    user1 = add_user("Steven", "steven@example.com","12345678f")
+    user2 = add_user("Alexander", "alexander@example.com","123456789f")
 
+    pets = []
+    i = 0
+    for name,path in pet_dict.items():
+        if i % 2 == 0:
+            pets[i] = add_pet(dog_type,user1,name,"PLACEHOLDER DESC",5,path)
+        else:
+            pets[i] = add_pet(dog_type,user2,name,"PLACEHOLDER DESC",5,path)
+        i+=1
+        
     print("Database population complete.")
 
 def add_user(username, email):
