@@ -15,7 +15,7 @@ def populate():
     for filename in os.listdir(photoFolder):
         if filename.lower().endswith((".jpg",".png"),".jpeg"):
             file_key = os.path.splitext(filename)[0]
-            full_path = os.path.join(folder_path,filename)
+            full_path = os.path.join(photoFolder,filename)
 
             pet_dict[file_key] = full_path
     
@@ -37,7 +37,7 @@ def populate():
         else:
             pets[i] = add_pet(dog_type,user2,name,"PLACEHOLDER DESC",5,path)
         i+=1
-        
+
     print("Database population complete.")
 
 def add_user(username, email):
