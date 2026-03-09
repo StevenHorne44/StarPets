@@ -5,16 +5,16 @@
 
 {% block title %}Categories{% endblock %}
 
-{% block page_header %}Browse Pet Categories{% endblock %}
+{% block page_header %}Browse Pet Categories{% endblock %}</h1>
 
 {% block filters %}
 <div class="filter-conatainer" style="margin-bottom: 20px;">
     <!-- Automatic page refresh on filter change -->
     <form method="GET" action="{% url 'pets:categories' %}">
-        <label for="type"><strong>Filter by Type:</strong></label>
+        <label for="type"><strong>Filter by :</strong></label>
         <!-- Add type={{ selected_type }} at the end of the URL -->
         <select name="type" id="type" onchange="this.form.submit()" style="padding: 5px; margin-left: 10px;">
-            <option value="all">All Pets</option>
+            <option value="all">All Animals</option>
             {% for pet_type in pet_types %}
                 <option value="{{ pet_type.type_name }}" {% if selected_type == pet_type.type_name %}selected{% endif %}>
                     {{ pet_type.type_name }}
