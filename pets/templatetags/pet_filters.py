@@ -6,25 +6,32 @@ register = template.Library()
 
 @register.filter(name='draw_stars')
 def draw_stars(stars):
-    #try to convert the input to an integer, if it fails, default to 0
+    #try to convert the input to a float, if it fails, default to 0.0
     try:
-        stars = int(stars)
+        stars = float(stars)
     except (ValueError, TypeError):
-        stars = 0
-    #ensure stars is between 0 and 5
-    stars = max(0, min(stars, 5))
+        stars = 0.0
+        
+    #ensure stars is between 0.0 and 5.0
+    stars = max(0.0, min(stars, 5.0))
     
-    empty = 5 - stars
+    # Calculate the width percentage for the gold stars
+    fill_percentage = (stars / 5.0) * 100
     
-    #create the HTML for filled and empty stars
-    filled_html = "⭐" * stars
-    empty_html = f'<span style="color:#e5e7eb">{"⭐" * empty}</span>'
-    
-    #combine the filled and empty stars into a single HTML string
+    # Create the overlay HTML
+    # Use relative positioning for the wrapper, and absolute positioning for the gold stars
     html = f'''
         <strong style="color: #374151;">Rating:</strong> 
-        <span style="color: #f59e0b; letter-spacing: 2px;">{filled_html}{empty_html}</span> 
-        <span style="color: #6b7280; font-weight: bold; margin-left: 5px;">({stars}/5)</span>
+        
+        <span style="display: inline-block; position: relative; letter-spacing: 2px;">
+            <span style="color: #e5e7eb; display: inline-block;">★★★★★</span>
+            
+            <span style="position: absolute; top: 0; left: 0; white-space: nowrap; overflow: hidden; width: {fill_percentage}%;">
+                <span style="color: #f59e0b;">★★★★★</span>
+            </span>
+        </span> 
+        
+        <span style="color: #6b7280; font-weight: bold; margin-left: 5px;">({stars:.1f}/5.0)</span>
     '''
     
     return mark_safe(html)
