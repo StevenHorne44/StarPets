@@ -4,6 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login as auth_login
 from django.contrib import messages
 from .forms import ExtendedUserCreationForm
+from .models import Pet, PetType
 
 # Create your views here.
 
@@ -16,7 +17,23 @@ def top_pets(request):
 
 @login_required
 def categories(request):
-    return render(request, 'pets/categories.html')
+    # Fetch all pet types for the filter
+    pet_types = PetType.objects.all()
+    selected_type = request.GET.get('type')
+    
+    # Apply a filter or return ALL pets if no filter is selected
+    if selected_type and selected_type != 'all':
+        pets = Pet.objects.filter(TypeID__type_name=selected_type)
+    else:
+        pets = Pet.objects.all()
+
+    # Add to the context dictionary the list of petss, types and selected type
+    context = {
+        'pets': pets,
+        'pet_types': pet_types,
+        'selected_type': selected_type
+    }
+    return render(request, 'pets/categories.html', context)
 
 @login_required
 def bookmarks(request):

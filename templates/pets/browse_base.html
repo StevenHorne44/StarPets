@@ -1,0 +1,18 @@
+{% extends 'pets/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="browsing-header-container">
+    <h1>{% block page_header %}Browse Pets{% endblock %}</h1>
+    <!-- Filters Section -->
+    {% block filters %}{% endblock %}
+</div>
+
+<div class="browsing-container">
+    <!-- Grid Template -->
+    <div class="pet-grid">
+        {% block grid_content %}
+        {% endblock %}
+    </div>
+</div>
+{% endblock %}
