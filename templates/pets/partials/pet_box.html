@@ -1,0 +1,31 @@
+{% load pet_filters %}
+
+<!-- Reusable template for filling in a Pet Box -->
+
+<div class="pet-box"> 
+    <!--Load Pet Picture if there is one-->
+    {% if pet.picture %}
+        <img src="{{ pet.picture.url }}" alt="{{ pet.name }}" class="pet-box-image">
+    {% else %}
+    <!-- Placeholder if no picture is available -->
+        <div class="pet-box-image"></div> 
+    {% endif %}
+    
+    <!-- Pet Information -->
+    <div class="pet-box-content">
+        <h2 class="pet-box-header">{{ pet.name }}</h2>
+        <div class="pet-box-rating">{{ pet.petrating_set.first.stars|default:0|draw_stars }}</div>
+        <p class="pet-box-description">{{ pet.description }}</p>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="pet-box-actions">
+        <button class="btn-pet-box btn-comment">Comment</button>
+        
+        {% if show_unbookmark %}
+            <button class="btn-pet-box btn-unbookmark">Unbookmark</button>
+        {% else %}
+            <button class="btn-pet-box btn-bookmark">Bookmark</button>
+        {% endif %}
+    </div>
+</div>

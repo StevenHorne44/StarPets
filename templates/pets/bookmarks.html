@@ -1,7 +1,15 @@
-{% extends 'pets/base.html' %}
+{% extends 'pets/browse_base.html' %}
+
+{% load static %}
 
 {% block title %}Bookmarks{% endblock %}
 
-{% block content %}
-    <h1 class="main-header">Your Bookmarked Pets</h1>
+{% block page_header %}Your Bookmarked Pets{% endblock %}
+
+{% block grid_content %}
+    {% for pet in pets %}
+        {% include 'pets/partials/pet_box.html' with show_unbookmark=True %}
+    {% empty %}
+        <p>You have no bookmarked pets yet. Start exploring and bookmark your favorites!</p>
+    {% endfor %}
 {% endblock %}

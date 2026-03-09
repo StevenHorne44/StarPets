@@ -37,7 +37,14 @@ def categories(request):
 
 @login_required
 def bookmarks(request):
-    return render(request, 'pets/bookmarks.html')
+    # Fetch the pets that are bookmarked by the user
+    bookmarked_pets = Pet.objects.filter(bookmark__UserID=request.user)
+    
+    # Add the bookmarked pets to the context dictionary and render the bookmarks template
+    context = {
+        'pets': bookmarked_pets
+    }
+    return render(request, 'pets/bookmarks.html', context)
 
 @login_required
 def upload_pets(request):
