@@ -47,5 +47,76 @@
             <footer>© 2026 Star Pets </footer>
             <hr>
         </div>
+
+        <!-- JavaScript for handling bookmark toggling -->
+        <script>
+            // Wait for the page to fully load
+            document.addEventListener('DOMContentLoaded', function() {
+                // Find all bookmark buttons on the page
+                const buttons = document.querySelectorAll('.toggle-bookmark-btn');
+
+                // Add click event listeners to all bookmark toggle buttons
+                buttons.forEach(button => {
+                    button.addEventListener('click', function(e) {
+                        e.preventDefault(); // Stop any default button behavior
+                        
+                        // Get the pet ID from the data attribute of the clicked button
+                        const petId = this.getAttribute('data-pet-id');
+                        const btn = this; 
+                        
+                        // Send a POST request to Django to toggle the bookmark status of the pet
+                        fetch(`/toggle-bookmark/${petId}/`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': getCookie('csrftoken') // Django reqires security token
+                            }
+                        })
+                        // Check if the response is OK and parse it as JSON
+                        .then(response => {
+                            if (!response.ok) { throw new Error(`HTTP error! status: ${response.status}`); }
+                            return response.json();
+                        })
+                        .then(data => {
+                            // Check if the server actually sent the 'is_bookmarked' boolean
+                            if (typeof data.is_bookmarked !== 'undefined') {
+                                
+                                // Toggle the visuals based on the boolean state
+
+                                if (data.is_bookmarked === true) {// If the pet is now bookmarked, change the button to show "Unbookmark"
+                                    btn.classList.replace('btn-bookmark', 'btn-unbookmark');
+                                    btn.textContent = 'Unbookmark';
+
+                                } else { // If the pet is now unbookmarked, change the button to show "Bookmark"
+                                    btn.classList.replace('btn-unbookmark', 'btn-bookmark');
+                                    btn.textContent = 'Bookmark';
+                                }
+                                
+                            } else {
+                                // Logging the entire response for debugging if 'is_bookmarked' is missing
+                                console.error("Backend did not return 'is_bookmarked'. Received:", data);
+                            }
+                        })
+                        .catch(error => console.error('Fetch Error:', error));
+                    });
+                });
+            });
+
+            // Standard Django helper function to get the CSRF token securely from browser cookies
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+        </script>
     </body>
 </html>

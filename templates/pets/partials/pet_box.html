@@ -22,10 +22,15 @@
     <div class="pet-box-actions">
         <button class="btn-pet-box btn-comment">Comment</button>
         
+        <!-- Show Unbookmark button if we're in the bookmarks page, otherwise show Bookmark button -->
         {% if show_unbookmark %}
-            <button class="btn-pet-box btn-unbookmark">Unbookmark</button>
+            <button class="btn-pet-box btn-unbookmark toggle-bookmark-btn" data-pet-id="{{ pet.id }}">
+                Unbookmark
+            </button>
         {% else %}
-            <button class="btn-pet-box btn-bookmark">Bookmark</button>
+            <button class="btn-pet-box btn-bookmark toggle-bookmark-btn" data-pet-id="{{ pet.id }}">
+                Bookmark
+            </button>
         {% endif %}
     </div>
 </div>

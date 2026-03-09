@@ -15,4 +15,5 @@ urlpatterns = [
     path('bookmark/', views.bookmarks, name='bookmarks'),
     path('upload/', views.upload_pets, name='upload'),
     path('profile/',views.profile, name='profile'),
+    path('toggle-bookmark/<int:pet_id>/', views.toggle_bookmark, name='toggle_bookmark'),
 ]
