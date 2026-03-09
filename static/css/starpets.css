@@ -19,6 +19,9 @@ nav {
     align-items: center;
     padding: 1rem 2rem;
     background-color: lightgrey;
+    position: sticky;
+    top: 0;            
+    z-index: 1000;
     
 }
 
@@ -96,10 +99,8 @@ nav a {
 .footer {
     text-align: center;
     background-color: lightgray;
-    bottom:0;
-    left:0;
-    position:fixed;
     width: 100%;
+    margin-top: 40px;
 }
 
 .footer footer {
@@ -198,6 +199,9 @@ input[type="text"], input[type="password"], input[type="email"] {
     margin-bottom: 10px;
     font-size: 0.9rem;
     color: #f59e0b; /* Star color */
+    display: flex;       
+    align-items: center; 
+    gap: 5px;
 }
 
 .pet-box-description {
@@ -242,4 +246,18 @@ input[type="text"], input[type="password"], input[type="email"] {
 .pet-box-featured .pet-box-rating {
     display: flex;
     justify-content: center;
+}
+
+/* --- Global Body Layout --- */
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Main content to stretches and fills all available empty space */
+.main-content {
+    flex-grow: 1;
 }

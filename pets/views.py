@@ -7,8 +7,9 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from .forms import ExtendedUserCreationForm
-from .models import Bookmark, Pet, PetType
+from .models import Bookmark, Pet, PetType, PetRating
 import datetime
+import json
 
 # Create your views here.
 
@@ -105,3 +106,26 @@ def sign_up(request):
     else:
         form = ExtendedUserCreationForm()
     return render(request, 'pets/signup.html', {'form':form})
+
+@login_required
+def rate_pet(request, pet_id):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            stars = int(data.get('rating', 0))
+            
+            if 1<= stars <= 5:
+                pet = get_object_or_404(Pet, id=pet_id)
+                
+                PetRating.objects.update_or_create(
+                    UserID=request.user,
+                    PetID=pet,
+                    defaults={'stars': stars}
+                )
+                
+                pet.refresh_from_db()
+                
+                return JsonResponse({'success' : True, 'new_average' : pet.average_rating})
+        except Exception as e:
+            return JsonResponse({'error' : str(e)}, status=400)
+    return JsonResponse({'error' : 'Invalid request'}, status=400)

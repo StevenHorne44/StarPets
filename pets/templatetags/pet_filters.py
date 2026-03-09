@@ -23,15 +23,15 @@ def draw_stars(stars):
     html = f'''
         <strong style="color: #374151;">Rating:</strong> 
         
-        <span style="display: inline-block; position: relative; letter-spacing: 2px;">
+        <span class="star-rating-wrapper" style="display: inline-block; position: relative; letter-spacing: 2px; font-size: 1.2rem; cursor: pointer;" title="Click to rate!">
             <span style="color: #e5e7eb; display: inline-block;">★★★★★</span>
             
-            <span style="position: absolute; top: 0; left: 0; white-space: nowrap; overflow: hidden; width: {fill_percentage}%;">
+            <span class="gold-stars-overlay" style="position: absolute; top: 0; left: 0; white-space: nowrap; overflow: hidden; width: {fill_percentage}%; pointer-events: none;">
                 <span style="color: #f59e0b;">★★★★★</span>
             </span>
         </span> 
         
-        <span style="color: #6b7280; font-weight: bold; margin-left: 5px;">({stars:.1f}/5.0)</span>
+        <span class="rating-text" style="color: #6b7280; font-weight: bold; margin-left: 5px;">({stars:.1f}/5.0)</span>
     '''
     
     return mark_safe(html)

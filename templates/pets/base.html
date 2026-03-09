@@ -37,7 +37,7 @@
         </nav>
         <hr>
 
-        <div>
+        <div class ="main-content">
             {% block content %}
             {% endblock %}
         </div>
@@ -52,57 +52,87 @@
         <script>
             // Wait for the page to fully load
             document.addEventListener('DOMContentLoaded', function() {
-                // Find all bookmark buttons on the page
+                
                 const buttons = document.querySelectorAll('.toggle-bookmark-btn');
+                const starWrappers = document.querySelectorAll('.interactive-rating .star-rating-wrapper');
 
-                // Add click event listeners to all bookmark toggle buttons
+                // --- BOOKMARK LOGIC ---
                 buttons.forEach(button => {
                     button.addEventListener('click', function(e) {
-                        e.preventDefault(); // Stop any default button behavior
+                        e.preventDefault(); 
                         
-                        // Get the pet ID from the data attribute of the clicked button
                         const petId = this.getAttribute('data-pet-id');
                         const btn = this; 
                         
-                        // Send a POST request to Django to toggle the bookmark status of the pet
                         fetch(`/toggle-bookmark/${petId}/`, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'X-CSRFToken': getCookie('csrftoken') // Django reqires security token
+                                'X-CSRFToken': getCookie('csrftoken') 
                             }
                         })
-                        // Check if the response is OK and parse it as JSON
                         .then(response => {
                             if (!response.ok) { throw new Error(`HTTP error! status: ${response.status}`); }
                             return response.json();
                         })
                         .then(data => {
-                            // Check if the server actually sent the 'is_bookmarked' boolean
                             if (typeof data.is_bookmarked !== 'undefined') {
-                                
-                                // Toggle the visuals based on the boolean state
-
-                                if (data.is_bookmarked === true) {// If the pet is now bookmarked, change the button to show "Unbookmark"
+                                if (data.is_bookmarked === true) {
                                     btn.classList.replace('btn-bookmark', 'btn-unbookmark');
                                     btn.textContent = 'Unbookmark';
-
-                                } else { // If the pet is now unbookmarked, change the button to show "Bookmark"
+                                } else {
                                     btn.classList.replace('btn-unbookmark', 'btn-bookmark');
                                     btn.textContent = 'Bookmark';
                                 }
-                                
                             } else {
-                                // Logging the entire response for debugging if 'is_bookmarked' is missing
-                                console.error("Backend did not return 'is_bookmarked'. Received:", data);
+                                console.error("Backend did not return 'is_bookmarked'.", data);
                             }
                         })
                         .catch(error => console.error('Fetch Error:', error));
                     });
                 });
+
+                // --- RATING LOGIC ---
+                starWrappers.forEach(wrapper => {
+                    wrapper.addEventListener('click', function(e) {
+                        
+                        const rect = this.getBoundingClientRect();
+                        const clickX = e.clientX - rect.left;
+                        let newRating = Math.ceil((clickX / rect.width) * 5);
+                        
+                        if (newRating < 1) newRating = 1;
+                        if (newRating > 5) newRating = 5;
+                        
+                        const parentContainer = this.closest('.interactive-rating');
+                        const petId = parentContainer.getAttribute('data-pet-id');
+                        
+                        fetch(`/rate-pet/${petId}/`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': getCookie('csrftoken')
+                            },
+                            body: JSON.stringify({'rating': newRating})
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                const goldStars = parentContainer.querySelector('.gold-stars-overlay');
+                                const fillPercentage = (data.new_average / 5.0) * 100;
+                                goldStars.style.width = `${fillPercentage}%`;
+                                
+                                const ratingText = parentContainer.querySelector('.rating-text');
+                                ratingText.textContent = `(${data.new_average.toFixed(1)}/5.0)`;
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                    });
+                });
+
             });
 
-            // Standard Django helper function to get the CSRF token securely from browser cookies
+            
+            // --- Stnadart Django Helper function to manage cookies ---
             function getCookie(name) {
                 let cookieValue = null;
                 if (document.cookie && document.cookie !== '') {
