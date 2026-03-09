@@ -8,6 +8,11 @@ from pets.models import PetType, Pet, PetRating
 import os
 
 def populate():
+    
+    PetRating.objects.all().delete()
+    Pet.objects.all().delete()
+    PetType.objects.all().delete()
+    User.objects.exclude(is_superuser=True).delete()
 
     pet_dict = {}
     photoFolder = "media/PetPhotos"

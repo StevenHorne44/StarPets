@@ -15,7 +15,14 @@ def home(request):
 
 @login_required
 def top_pets(request):
-    return render(request, 'pets/top_pets.html')
+    # Fetch the top 4 pets based on their average rating, ordered from highest to lowest
+    top_pets_list = Pet.objects.order_by('-average_rating')[:4]
+    
+    # Add the top pets to the context dictionary and render the top pets template
+    context = {
+        'top_pets' : top_pets_list
+    }
+    return render(request, 'pets/top_pets.html', context)
 
 @login_required
 def categories(request):

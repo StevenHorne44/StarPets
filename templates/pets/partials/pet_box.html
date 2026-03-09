@@ -2,7 +2,14 @@
 
 <!-- Reusable template for filling in a Pet Box -->
 
-<div class="pet-box"> 
+<div class="pet-box {% if is_featured %}pet-box-featured{% endif %}">
+    <!-- Show the featured header if this pet is marked as featured -->
+    {% if is_featured %}
+        <h2 style="padding: 15px 0 10px 0; margin: 0; font-size: 1.5rem;">
+            #1 Pet of the Week: {{ pet.name }}!
+        </h2>
+    {% endif %}
+
     <!--Load Pet Picture if there is one-->
     {% if pet.picture %}
         <img src="{{ pet.picture.url }}" alt="{{ pet.name }}" class="pet-box-image">
@@ -13,8 +20,13 @@
     
     <!-- Pet Information -->
     <div class="pet-box-content">
-        <h2 class="pet-box-header">{{ pet.name }}</h2>
-        <div class="pet-box-rating">{{ pet.petrating_set.first.stars|default:0|draw_stars }}</div>
+        {% if not is_featured %}
+            <h2 class="pet-box-header">
+                {% if rank %}#{{ rank }} {% endif %}{{ pet.name }}
+            </h2>
+        {% endif %}
+
+        <div class="pet-box-rating">{{ pet.average_rating|default:0|draw_stars }}</div>
         <p class="pet-box-description">{{ pet.description }}</p>
     </div>
 

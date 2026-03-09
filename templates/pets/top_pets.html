@@ -5,3 +5,17 @@
 {% block title %}Top Pets{% endblock %}
 
 {% block page_header %}Top Pets of the Week{% endblock %}
+
+{% block grid_content %}
+    {% for pet in top_pets %}
+
+    {% if forloop.first %}
+        {% include 'pets/partials/pet_box.html' with is_featured=True %}
+    {% else %}
+        {% include 'pets/partials/pet_box.html' with rank=forloop.counter is_featured=False %}
+    {% endif %}
+
+    {% empty %}
+        <p>No pets have been rated yet.</p>
+    {% endfor %}
+{% endblock %}

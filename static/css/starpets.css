@@ -227,3 +227,19 @@ input[type="text"], input[type="password"], input[type="email"] {
 .btn-comment { background-color: #3b82f6; }
 .btn-bookmark { background-color: #10b981; }
 .btn-unbookmark { background-color: #ef4444; }
+
+/* --- Top Pets Featured Banner --- */
+
+.pet-box-featured {
+    grid-column: 1 / -1; 
+    text-align: center;  
+}
+
+.pet-box-featured .pet-box-image {
+    height: 300px; 
+}
+
+.pet-box-featured .pet-box-rating {
+    display: flex;
+    justify-content: center;
+}
