@@ -43,6 +43,10 @@ def bookmarks(request):
 def upload_pets(request):
     return render(request, 'pets/upload.html')
 
+@login_required
+def profile(request):
+    return render(request, 'pets/profile.html')
+
 def sign_up(request):
     if request.method == 'POST':
         form = ExtendedUserCreationForm(request.POST)
