@@ -5,8 +5,10 @@ from django.contrib.auth import login as auth_login
 from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from .forms import ExtendedUserCreationForm
 from .models import Bookmark, Pet, PetType
+import datetime
 
 # Create your views here.
 
@@ -15,8 +17,15 @@ def home(request):
 
 @login_required
 def top_pets(request):
-    # Fetch the top 4 pets based on their average rating, ordered from highest to lowest
-    top_pets_list = Pet.objects.order_by('-average_rating')[:4]
+    # Calculate the exact time 7 days ago
+    one_week_ago = timezone.now() - datetime.timedelta(days=7)
+    
+    # Fetch and filter pets added in the last 7 days, then get the top 4 pets based on their average rating, ordered from highest to lowest
+    top_pets_list = Pet.objects.filter(date_added__gte=one_week_ago).order_by('-average_rating')[:4]
+    
+    # If the list is empty, fallback to the all-time top 4
+    if not top_pets_list.exists():
+        top_pets_list = Pet.objects.order_by('-average_rating')[:4]
     
     # Add the top pets to the context dictionary and render the top pets template
     context = {

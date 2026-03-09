@@ -26,7 +26,7 @@
             </h2>
         {% endif %}
 
-        <div class="pet-box-rating">{{ pet.average_rating|default:0|draw_stars }}</div>
+        <div class="pet-box-rating">{{ pet.average_rating|default:0|draw_stars }}</div> <!-- Display average rating with stars, defaulting to 0 if no rating -->
         <p class="pet-box-description">{{ pet.description }}</p>
     </div>
 
