@@ -1,5 +1,7 @@
 {% extends 'pets/browse_base.html' %}
+
 {% load static %}
+{% load pet_filters %}
 
 {% block title %}Categories{% endblock %}
 
@@ -30,15 +32,15 @@
             <!-- Upload Pet Picture -->
             {% if pet.picture %}
                 <img src="{{ pet.picture.url }}" alt="{{ pet.name }}" class="pet-box-image">
-                
+
             <!-- Fill in with a Placeholder if No Image provided -->
             {% else %}
                 <div class ="pet-box-image"></div> {% endif %}
             
             <!-- Fill in Content -->
             <div class="pet-box-content">
-                <h2 class="pet-box-header">{{ pet.name }}</h2>
-                <div class="pet-box-rating">⭐ {{ pet.petrating_set.first.stars|default:"No ratings" }}</div>
+                <p class="pet-box-header">{{ pet.name }}</p>
+                <div class="pet-box-rating">{{ pet.petrating_set.first.stars|default:0|draw_stars }}</div>
                 <p class="pet-box-description">{{ pet.description }}</p>
             </div>
 
