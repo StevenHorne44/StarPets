@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from .forms import ExtendedUserCreationForm
+from .forms import ExtendedUserCreationForm, UploadForm
 from .models import Bookmark, Pet, PetType, PetRating
 import datetime
 import json
@@ -88,7 +88,16 @@ def toggle_bookmark(request, pet_id):
 
 @login_required
 def upload_pets(request):
-    return render(request, 'pets/upload.html')
+    if request.method == 'POST':
+        form = UploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            pet = form.save(commit=False)
+            pet.UserID = request.user
+            pet.save()
+            return redirect('pets:home')
+    else:
+        form = UploadForm()
+    return render(request, 'pets/upload.html', {'form':form})
 
 @login_required
 def profile(request):
