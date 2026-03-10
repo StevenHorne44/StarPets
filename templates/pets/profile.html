@@ -4,4 +4,23 @@
 
 {% block content %}
     <h1 class="main-header">User's profile</h1>
+
+    <h2>My Pets</h2>
+    {% if pets %}
+        {% for pet in pets %}
+            <div class="pet">
+                <h3>{{ pet.name }}</h3>
+
+                {% if pet.picture %}
+                    <img src="{{ pet.picture.url }}" width="200">
+                {% endif %}
+
+                <p>{{ pet.description }}</p>
+                <p>Type: {{ pet.TypeID }}</p>
+                <p>Rating: {{ pet.average_rating }}</p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>You haven't uploaded any pets yet</p>
+    {% endif %}
 {% endblock %}

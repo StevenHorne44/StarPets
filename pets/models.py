@@ -73,3 +73,4 @@ def update_pet_average_rating(sender, instance, **kwargs):
     
     # Save the updated average to the db
     pet.save()
+
