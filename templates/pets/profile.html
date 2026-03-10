@@ -1,9 +1,10 @@
-{% extends 'pets/base.html' %}
+{% extends 'pets/browse_base.html' %}
+{% load static %}
 
-{% block title %}USER Profile{% endblock %}
+{% block title %}{{ user.username }} Profile{% endblock %}
 
 {% block content %}
-    <h1 class="main-header">User's profile</h1>
+    <h1 class="main-header">{{ user.username }}'s profile</h1>
 
     <h2>My Pets</h2>
     {% if pets %}
