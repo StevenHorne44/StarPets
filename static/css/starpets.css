@@ -262,48 +262,41 @@ body {
     flex-grow: 1;
 }
 
-.change-profile-btn{
-    background-color: #3b82f6; 
+
+/* -------------PROFILE SECTION CSS------------------ */
+
+.profile-sidebar {
+ width: 25%;
+ height: 100%;
+ float: left; ;
+}
+
+.change-profile-btn, .delete-account-btn{
     color: white;
     border:none;
     padding: 5px 10px;
     border-radius: 5px;
 }
 
-.delete-account-btn{
+
+.change-profile-btn {
+    background-color: #3b82f6;
+}
+
+.delete-account-btn {
     background-color: #ef4444;
-    color: white;
-    border:none;
-    padding: 5px 10px;
-    border-radius: 5px;
 }
 
-.delete-account-btn, .change-profile-btn{
-    cursor: pointer;
-    transition: backround-color 0.3 ease;
+.no-user-pet-message {
+    text-align: center;
+    grid-column: 1 / -1;
+    padding: 40px;
 }
 
-.profile-container {
-    display: flex;
-    gap: 40px;
-    padding: 20px;
-    font-family: sans-serif;
-}
-
-.profile-siderbar {
-    flex: 1;
-    max-width: 250px;
-}
-
-.profile-icon {
-    
-}
-
-.profile-description-box {
-    border: 1px solid #3b82f6;
-    padding: 10px;
-    min-height: 150px;
-    margin-top: 5px;
+.profile-pet-content{
+    width: 75%;
+    height: 100%;
+    float: right;
 }
 
 

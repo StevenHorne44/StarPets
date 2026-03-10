@@ -5,23 +5,43 @@
 
 {% block content %}
     <h1 class="main-header">{{ user.username }}'s profile</h1>
+        
+    <div class="profile-layout-wrapper">
+        <aside class="profile-sidebar">
 
-    <h2>My Pets</h2>
-    {% if pets %}
-        {% for pet in pets %}
-            <div class="pet">
-                <h3>{{ pet.name }}</h3>
-
-                {% if pet.picture %}
-                    <img src="{{ pet.picture.url }}" width="200">
-                {% endif %}
-
-                <p>{{ pet.description }}</p>
-                <p>Type: {{ pet.TypeID }}</p>
-                <p>Rating: {{ pet.average_rating }}</p>
+            <div class="profile-image-section>">
+                <div class="profile-pic-placeholder">
+                    <img src="{% static 'images/defaultUser.png' %}" alt = "Profile Picture">
+                </div>
+                <button class="change-profile-btn">Change Profile Pic</button>
             </div>
-        {% endfor %}
-    {% else %}
-        <p>You haven't uploaded any pets yet</p>
-    {% endif %}
+
+            <div class="profile-description-section">
+                <h3>Description</h3>
+                <div class="profile-description-box">Enter your description here!</div> 
+            </div>
+
+            <form action="" method = "post">
+                {% csrf_token %}
+                <button type="submit" class="delete-account-btn">DELETE ACCOUNT</button>
+            </form>
+
+        </aside>
+
+        <main class="profile-pet-content">
+                <h2 class = "profile-pet-section-title">{{ user.username }}'s StarPets!</h2>
+                
+                <div class="pet-grid">
+                    {% for pet in pets %}
+                        {% include 'pets/partials/pet_box.html' %}
+                    {% empty %}
+                        <div class="no-user-pet-message">
+                            <p>You haven't uploaded any pets yet.</p>
+                            <a hrfe="{% url 'pets:upload' %}" class="btn-pet-box btn-comment">Upload your first pet!</a>
+                        </div>
+                    {% endfor %}
+
+                </div>
+        </main>
+    </div>
 {% endblock %}
