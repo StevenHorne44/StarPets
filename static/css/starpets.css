@@ -261,3 +261,121 @@ body {
 .main-content {
     flex-grow: 1;
 }
+
+.change-profile-btn{
+    background-color: #3b82f6; 
+    color: white;
+    border:none;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.delete-account-btn{
+    background-color: #ef4444;
+    color: white;
+    border:none;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.delete-account-btn, .change-profile-btn{
+    cursor: pointer;
+    transition: backround-color 0.3 ease;
+}
+
+.profile-container {
+    display: flex;
+    gap: 40px;
+    padding: 20px;
+    font-family: sans-serif;
+}
+
+.profile-siderbar {
+    flex: 1;
+    max-width: 250px;
+}
+
+.profile-icon {
+    
+}
+
+.profile-description-box {
+    border: 1px solid #3b82f6;
+    padding: 10px;
+    min-height: 150px;
+    margin-top: 5px;
+}
+
+
+/*-----------------PROFILE DROPDOWN CSS-------------------------*/
+
+.to-profile-div{
+    position:relative;
+    display: inline-block;
+}
+
+/* button to go to user profile page */
+.go-to-profile-btn {
+    cursor: pointer;
+    background: #e3a807;
+    color: white;
+    border: none;
+    min-width: 100px;
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.dropdown-content{
+    display:none;
+    position:absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 8px;
+    background-color: white;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+    border-radius: 8px;
+    overflow: hidden; /* stop link hover going past corner */
+    z-index: 1000; /*make sure dropdown stays on top */
+}
+
+.dropdown-content a, .dropdown-content button {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 16px;
+    text-decoration: none;
+    text-align: left;
+    font-size: 14px;
+    font-family: inherit;
+    font-weight: bold;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s;
+
+
+}
+
+.profile-link {
+    background-color:#3b82f6;
+}
+
+.profile-link:hover{
+    background-color: #2980b9;
+}
+
+.logout-btn{
+    background-color: #ef4444;
+}
+
+.logout-btn:hover {
+    background-color: #d71919;
+}
+
+.show {
+    display: block;
+}
+
+/*--------------------- END OF PROFILE DROPDOWN CSS------------------- */

@@ -30,9 +30,21 @@
             </ul>
             <div class="user-status">
                 {% if user.is_authenticated %}
-                    <a href ="{% url 'pets:profile' %}">
-                    Logged in as: <strong>{{ user.username }}</strong>
-                    </a>
+                    <div class="to-profile-div">
+                        <button id="profile-dropdown" class="go-to-profile-btn">
+                            <strong>{{ user.username }}</strong>
+                        </button>
+
+                        <div id="dropdown-menu" class="dropdown-content">
+                            <a class = "profile-link" href ="{% url 'pets:profile' %}">Go to profile</a>
+
+                            <form action="{% url 'pets:logout' %}" method="post" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="logout-btn">Logout</button>
+                            </form>
+    
+                        </div>
+                    </div>
                 {% else %}
                     <a href ="{% url 'pets:login' %}">Not Logged In</a>
                 {% endif %}
