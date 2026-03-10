@@ -2,8 +2,9 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 from django.db.models import Avg
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import pre_save, post_save, post_delete
 from django.dispatch import receiver
+import os
 
 # Create your models here.
 
@@ -52,10 +53,37 @@ class Bookmark(models.Model):
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     profile_picture = models.ImageField(upload_to='profile_pictures', blank=True)
-    
+    description = models.TextField(blank=True)
 
     def __str__(self):
         return self.user.username
+
+#delete old file when a new one is uploaded
+@receiver(pre_save, sender=UserProfile)
+def auto_delete_file_on_change(sender, instance, **kwargs):
+    if not instance.pk:
+        return False
+    
+    try: 
+        old_profile = UserProfile.objects.get(pk=instance.pk)
+        old_file = old_profile.profile_picture
+    except UserProfile.DoesNotExist:
+        return False
+    
+    new_file = instance.profile_picture
+
+    if old_file and old_file != new_file:
+        if os.path.isfile(old_file.path):
+            os.remove(old_file.path)
+
+    
+#delete file when UserProfile delete (user deletes account)
+@receiver(post_delete, sender=UserProfile)
+def auto_delete_file_on_delete(sender, instance, **kwargs):
+    if instance.profile_picture:
+        if os.path.isfile(instance.profile_picture.path):
+            os.remove(instance.profile_picture.path)
+
 
 # Signal to update average rating of a pet whenever a new rating is added or deleted
 @receiver(post_save, sender='pets.PetRating')

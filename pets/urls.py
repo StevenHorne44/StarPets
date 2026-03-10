@@ -16,7 +16,9 @@ urlpatterns = [
     path('categories/', views.categories, name='categories'),
     path('bookmark/', views.bookmarks, name='bookmarks'),
     path('upload/', views.upload_pets, name='upload'),
-    path('profile/',views.profile, name='profile'),
+    path('profile/', views.profile, name='profile'),
+    path('profile/edit/' ,views.edit_profile, name='edit_profile'),
+    path('profile/delete/', views.delete_account, name='delete_account'),
     path('toggle-bookmark/<int:pet_id>/', views.toggle_bookmark, name='toggle_bookmark'),
     path('rate-pet/<int:pet_id>/', views.rate_pet, name='rate_pet'),
 ]

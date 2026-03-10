@@ -1,5 +1,5 @@
 from django import forms
-from .models import Pet
+from .models import Pet, UserProfile
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
@@ -20,3 +20,12 @@ class UploadForm(forms.ModelForm):
     class Meta:
         model = Pet
         exclude = ('UserID', 'average_rating')
+
+
+class UserProfileForm(forms.ModelForm):
+    description = forms.CharField(required=False, max_length=200, help_text="Enter your description here!")
+    profile_picture = forms.ImageField(required=False, help_text="Upload a profile picture")
+
+    class Meta:
+        model = UserProfile
+        fields = ('profile_picture','description')

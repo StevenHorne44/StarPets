@@ -1,13 +1,13 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import login as auth_login
+from django.contrib.auth import login as auth_login, logout
 from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from .forms import ExtendedUserCreationForm, UploadForm
-from .models import Bookmark, Pet, PetType, PetRating
+from .forms import ExtendedUserCreationForm, UploadForm, UserProfileForm
+from .models import Bookmark, Pet, PetType, PetRating, UserProfile
 import datetime
 import json
 
@@ -103,7 +103,33 @@ def upload_pets(request):
 def profile(request):
     # get all the pets where UserID == current user
     user_pets = Pet.objects.filter(UserID=request.user) 
-    return render(request, 'pets/profile.html', {'pets':user_pets})
+    user_profile,created = UserProfile.objects.get_or_create(user=request.user)
+
+    return render(request, 'pets/profile.html', {'pets':user_pets, 'user_profile': user_profile})
+
+@login_required
+def edit_profile(request):
+    user_profile, created = UserProfile.objects.get_or_create(user=request.user)
+
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, request.FILES, instance=user_profile)
+        if form.is_valid():
+            form.save()
+            return redirect('pets:profile')
+    
+    return redirect('pets:profile')
+
+@login_required
+def delete_account(request):
+    if request.method == 'POST':
+        user = request.user
+        logout(request)
+        user.delete()
+        messages.success(request, "Your account has been successfully deleted.")
+        return redirect('pets:home')
+    
+    return redirect('pets:profile')
+
 
 def sign_up(request):
     if request.method == 'POST':

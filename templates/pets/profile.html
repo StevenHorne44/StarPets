@@ -3,27 +3,45 @@
 
 {% block title %}{{ user.username }} Profile{% endblock %}
 
-{% block content %}
+{% block content %}        
     <h1 class="main-header">{{ user.username }}'s profile</h1>
-        
     <div class="profile-layout-wrapper">
         <aside class="profile-sidebar">
 
             <div class="profile-image-section>">
                 <div class="profile-pic-placeholder">
-                    <img src="{% static 'images/defaultUser.png' %}" alt = "Profile Picture">
+                    {% if user.userprofile.profile_picture %}
+                        <img src="{{ user.userprofile.profile_picture.url }}" alt="Profile Picture">
+                    {% else %}
+                        <img src="{% static 'images/defaultUser.png' %}" alt="Default Picture"> 
+                    {% endif %}
                 </div>
-                <button class="change-profile-btn">Change Profile Pic</button>
+                
+                <form id="profile-pic-form" method="POST" action="{% url 'pets:edit_profile' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="file" name="profile_picture" id="hidden-file-input" style="display: none;" accept="image/*" onchange="this.form.submit()">
+                    <button type="button" class="change-profile-btn" onclick="document.getElementById('hidden-file-input').click();">
+                        Change Profile Pic
+                    </button>
+                </form>
             </div>
 
             <div class="profile-description-section">
                 <h3>Description</h3>
-                <div class="profile-description-box">Enter your description here!</div> 
+                <form action="{% url 'pets:edit_profile' %}" method="POST">
+                    {% csrf_token %}
+                        <textarea name="description" class="profile-description-box">{{ user.userprofile.description|default:"Enter your description here!" }}</textarea>
+                        <button type="submit" class="save-desc-btn">Save Description</button>
+                </form>
             </div>
 
-            <form action="" method = "post">
+            <form action="{% url 'pets:delete_account' %}" method = "post">
                 {% csrf_token %}
-                <button type="submit" class="delete-account-btn">DELETE ACCOUNT</button>
+                <button type="submit" 
+                        class="delete-account-btn"
+                        onclick="return confirm('Are you sure? This will delete your profile and all uploaded StarPets');">
+                        DELETE ACCOUNT
+                </button>  
             </form>
 
         </aside>
@@ -37,7 +55,7 @@
                     {% empty %}
                         <div class="no-user-pet-message">
                             <p>You haven't uploaded any pets yet.</p>
-                            <a hrfe="{% url 'pets:upload' %}" class="btn-pet-box btn-comment">Upload your first pet!</a>
+                            <a href="{% url 'pets:upload' %}" class="btn-pet-box btn-comment">Upload your first pet!</a>
                         </div>
                     {% endfor %}
 
