@@ -20,14 +20,36 @@
     
     <!-- Pet Information -->
     <div class="pet-box-content">
-        {% if not is_featured %}
+        {% if not is_featured %} <!-- Show rank only if not featured, since featured already implies #1 -->
             <h2 class="pet-box-header">
                 {% if rank %}#{{ rank }} {% endif %}{{ pet.name }}
             </h2>
         {% endif %}
 
-        <div class="pet-box-rating interactive-rating" data-pet-id="{{ pet.id }}">
-            {{ pet.average_rating|default:0|draw_stars }}
+        {% get_user_rating pet request.user as user_rating %}
+        <!-- User Rating Section -->
+        <div class="pet-box-rating interactive-rating" data-pet-id="{{ pet.id }}" data-user-rating="{{ user_rating }}">
+
+            <!-- Display user rating stars -->
+            <div class="user-rating-container">
+                <strong style="color: #374151;">Your Rating:</strong>
+                <span class="user-stars" style="letter-spacing: 2px; font-size: 1.2rem; cursor: pointer;" title="Click to rate!">
+                    <!-- Loop to display stars if user has rated the pet -->
+                        {% for _ in "12345" %}
+                            <span class="star" data-val="{{ forloop.counter }}" style="color: {% if user_rating >= forloop.counter %}#f59e0b{% else %}#e5e7eb{% endif %};">★</span>
+                        {% endfor %}
+                    </span>
+                </span>
+
+                <!-- Show the numeric user rating next to the stars -->
+                <span class="user-rating-text" style="color: #6b7280; font-weight: bold; margin-left: 5px;">({{ user_rating }}/5)</span>
+            </div>
+            
+            <!-- Display average rating stars -->
+            <div class="average-rating-container">
+                {{ pet.average_rating|default:0|draw_stars }}
+            </div>
+
         </div> <!-- Display average rating with stars, defaulting to 0 if no rating -->
         <p class="pet-box-description">{{ pet.description }}</p>
     </div>

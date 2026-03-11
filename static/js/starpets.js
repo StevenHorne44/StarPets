@@ -42,39 +42,74 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // --- RATING LOGIC ---
-    starWrappers.forEach(wrapper => {
-        wrapper.addEventListener('click', function (e) {
+    const ratingContainers = document.querySelectorAll('.interactive-rating');
 
-            const rect = this.getBoundingClientRect();
-            const clickX = e.clientX - rect.left;
-            let newRating = Math.ceil((clickX / rect.width) * 5);
+    ratingContainers.forEach(container => {
+        const stars = container.querySelectorAll('.star');
+        const userRatingText = container.querySelector('.user-rating-text');
+        const petId = container.getAttribute('data-pet-id');
+        let currentUserRating = parseInt(container.getAttribute('data-user-rating')) || 0;
 
-            if (newRating < 1) newRating = 1;
-            if (newRating > 5) newRating = 5;
+        // Function to color stars based on rating and state (hover vs saved)
+        const updateStars = (rating, isHover = false) => {
+            stars.forEach(star => {
+                const starVal = parseInt(star.getAttribute('data-val'));
+                if (starVal <= rating) {
+                    // Light yellow for hover, gold for saved
+                    star.style.color = isHover ? '#fde047' : '#f59e0b'; 
+                } else {
+                    star.style.color = '#e5e7eb'; // Grey
+                }
+            });
+            userRatingText.textContent = `(${rating}/5)`;
+        };
 
-            const parentContainer = this.closest('.interactive-rating');
-            const petId = parentContainer.getAttribute('data-pet-id');
+        stars.forEach(star => {
+            // Hover Effect: Highlight stars up to the hovered star
+            star.addEventListener('mouseenter', function() {
+                const hoverVal = parseInt(this.getAttribute('data-val'));
+                updateStars(hoverVal, true);
+            });
 
-            fetch(`${RATE_URL}${petId}/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken')
-                },
-                body: JSON.stringify({ 'rating': newRating })
-            })
+            // Click Effect: Submit via AJAX
+            star.addEventListener('click', function() {
+                const newRating = parseInt(this.getAttribute('data-val'));
+
+                fetch(`${RATE_URL}${petId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({ 'rating': newRating })
+                })
+                // Expecting a JSON response with at least { success: true, new_average: 4.2 }
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        const goldStars = parentContainer.querySelector('.gold-stars-overlay');
-                        const fillPercentage = (data.new_average / 5.0) * 100;
-                        goldStars.style.width = `${fillPercentage}%`;
+                        // Instantly update the saved User Rating
+                        currentUserRating = newRating;
+                        container.setAttribute('data-user-rating', currentUserRating);
+                        updateStars(currentUserRating, false); 
 
-                        const ratingText = parentContainer.querySelector('.rating-text');
-                        ratingText.textContent = `(${data.new_average.toFixed(1)}/5.0)`;
+                        // Instantly update the Average Rating visuals below it
+                        const goldStarsOverlay = container.querySelector('.gold-stars-overlay');
+                        const fillPercentage = (data.new_average / 5.0) * 100;
+                        goldStarsOverlay.style.width = `${fillPercentage}%`;
+
+                        // Update the numeric average rating text as well
+                        const avgRatingText = container.querySelector('.rating-text');
+                        avgRatingText.textContent = `(${data.new_average.toFixed(1)}/5.0)`;
                     }
                 })
                 .catch(error => console.error('Error:', error));
+            });
+        });
+
+        // Mouse Leave Effect: Reset back to the saved rating
+        const userRatingContainer = container.querySelector('.user-rating-container');
+        userRatingContainer.addEventListener('mouseleave', function() {
+            updateStars(currentUserRating, false);
         });
     });
 

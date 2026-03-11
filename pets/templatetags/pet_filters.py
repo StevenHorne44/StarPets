@@ -1,5 +1,6 @@
 from django import template
 from django.utils.safestring import mark_safe
+from pets.models import PetRating
 
 #registering the template library
 register = template.Library()
@@ -21,11 +22,10 @@ def draw_stars(stars):
     # Create the overlay HTML
     # Use relative positioning for the wrapper, and absolute positioning for the gold stars
     html = f'''
-        <strong style="color: #374151;">Rating:</strong> 
+        <strong style="color: #374151;">Average Rating:</strong> 
         
-        <span class="star-rating-wrapper" style="display: inline-block; position: relative; letter-spacing: 2px; font-size: 1.2rem; cursor: pointer;" title="Click to rate!">
+        <span class="star-rating-wrapper" style="display: inline-block; position: relative; letter-spacing: 2px; font-size: 1.2rem; pointer-events: none;">
             <span style="color: #e5e7eb; display: inline-block;">★★★★★</span>
-            
             <span class="gold-stars-overlay" style="position: absolute; top: 0; left: 0; white-space: nowrap; overflow: hidden; width: {fill_percentage}%; pointer-events: none;">
                 <span style="color: #f59e0b;">★★★★★</span>
             </span>
@@ -35,3 +35,11 @@ def draw_stars(stars):
     '''
     
     return mark_safe(html)
+
+@register.simple_tag
+def get_user_rating(pet, user):
+    if user.is_authenticated:
+        rating = PetRating.objects.filter(PetID=pet, UserID=user).first()
+        if rating:
+            return rating.stars
+    return 0
