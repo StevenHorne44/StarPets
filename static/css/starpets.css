@@ -415,6 +415,10 @@ body {
     display: block;
 }
 
+.delete-pet-btn {
+    background-color: #d71919;
+}
+
 /*--------------------- END OF PROFILE DROPDOWN CSS------------------- */
 
 

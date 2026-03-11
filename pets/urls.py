@@ -21,6 +21,8 @@ urlpatterns = [
     path('profile/delete/', views.delete_account, name='delete_account'),
     path('toggle-bookmark/<int:pet_id>/', views.toggle_bookmark, name='toggle_bookmark'),
     path('rate-pet/<int:pet_id>/', views.rate_pet, name='rate_pet'),
+    path('delete-pet/', views.select_pet_delete, name="select_pet_delete"),
+    path('delete/<int:pet_id>/', views.delete_pet, name='delete_pet'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

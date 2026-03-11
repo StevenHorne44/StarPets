@@ -166,3 +166,21 @@ def rate_pet(request, pet_id):
         except Exception as e:
             return JsonResponse({'error' : str(e)}, status=400)
     return JsonResponse({'error' : 'Invalid request'}, status=400)
+
+
+#pet deletion
+@login_required
+def select_pet_delete(request):
+    user_pets = Pet.objects.filter(UserID=request.user)
+    return render(request, 'pets/select_pet_delete.html', {'pets': user_pets})
+
+@login_required
+def delete_pet(request, pet_id):
+    pet = get_object_or_404(Pet, id=pet_id, UserID=request.user)
+    if request.method == "POST":
+        pet.delete()
+        messages.success(request, "Your upload has been successfully deleted.")
+        return redirect('pets:home')
+    
+    return render(request, 'pets/confirm_delete.html', {'pet': pet})
+

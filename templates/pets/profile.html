@@ -49,6 +49,10 @@
         <main class="profile-pet-content">
                 <h2 class = "profile-pet-section-title">{{ user.username }}'s StarPets!</h2>
                 
+                <div class="delete-pet">
+                    <a href="{% url 'pets:select_pet_delete' %}">Delete Pet</a>
+                </div>
+
                 <div class="pet-grid">
                     {% for pet in pets %}
                         {% include 'pets/partials/pet_box.html' %}
