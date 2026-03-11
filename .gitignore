@@ -1,7 +1,6 @@
 *.pyc
 **/__pycache__/
 db.sqlite3
-media/pet_images
-media/profile_pictures
+media/
 .conda/
 .vscode/
