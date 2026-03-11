@@ -94,7 +94,7 @@ def upload_pets(request):
             pet = form.save(commit=False)
             pet.UserID = request.user
             pet.save()
-            return redirect('pets:home')
+            return redirect('pets:profile')
     else:
         form = UploadForm()
     return render(request, 'pets/upload.html', {'form':form})

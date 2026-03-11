@@ -416,3 +416,34 @@ body {
 }
 
 /*--------------------- END OF PROFILE DROPDOWN CSS------------------- */
+
+
+/* upload page css */
+.form-container {
+    width: 450px;
+    margin: 30px auto;      
+    padding: 25px;
+
+    background-color: #d1d5db ;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+    text-align: left;
+}
+
+.upload-btn {
+    background-color: #2980b9;
+    color : white;
+    border: none;
+    min-width: 100px;
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.form-group {
+    font-size: 20px;
+    font-family: inherit;
+    margin-bottom: 15px;
+}

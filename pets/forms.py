@@ -1,5 +1,5 @@
 from django import forms
-from .models import Pet, UserProfile
+from .models import Pet, PetType, UserProfile
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
@@ -12,14 +12,18 @@ class ExtendedUserCreationForm(UserCreationForm):
 
 
 class UploadForm(forms.ModelForm):
-    
-    name = forms.CharField(required=True, help_text="Enter your pets name below:")
-    picture = forms.ImageField(required=True, help_text="Upload an image of your pet here")
-    description = forms.CharField(help_text="Describe your pet below:")
+    name = forms.CharField(required=True, label="Enter your pets name:")
+    TypeID = forms.ModelChoiceField(required=True, queryset=PetType.objects.none(), label="Select pet category:")
+    picture = forms.ImageField(required=True, label="Upload pet image")
+    description = forms.CharField(label="Description:")
 
     class Meta:
         model = Pet
         exclude = ('UserID', 'average_rating')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['TypeID'].queryset = PetType.objects.all().order_by('type_name')
 
 
 class UserProfileForm(forms.ModelForm):
@@ -29,3 +33,4 @@ class UserProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
         fields = ('profile_picture','description')
+
