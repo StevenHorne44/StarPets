@@ -15,12 +15,12 @@ def populate():
     User.objects.exclude(is_superuser=True).delete()
 
     pet_dict = {}
-    photoFolder = "media/PetPhotos"
+    photoFolder = "static/sample_pets"
 
     for filename in os.listdir(photoFolder):
         if filename.lower().endswith((".jpg",".png",".jpeg")):
             file_key = os.path.splitext(filename)[0]
-            db_path = f"PetPhotos/{filename}"
+            db_path = f"sample_pets/{filename}"
             pet_dict[file_key] = db_path
     
     for name,path in pet_dict.items():
