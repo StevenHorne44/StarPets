@@ -12,7 +12,9 @@
 
     <!--Load Pet Picture if there is one-->
     {% if pet.picture %}
-        <img src="{{ pet.picture.url }}" alt="{{ pet.name }}" class="pet-box-image">
+        <div class="pet-image-wrapper" style="background-image: url('{{ pet.picture.url }}');">
+            <img src="{{ pet.picture.url }}" class="pet-box-image" alt="{{ pet.name }}">
+        </div>
     {% else %}
     <!-- Placeholder if no picture is available -->
         <div class="pet-box-image"></div> 

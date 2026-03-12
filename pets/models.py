@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
+from PIL import Image, ImageOps
 
 # Create your models here.
 
@@ -24,6 +25,21 @@ class Pet(models.Model):
 
     def __str__(self):
         return self.name
+    
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        if self.picture:
+            img_path = self.picture.path
+            img = Image.open(img_path)
+
+            if img.mode in ("RGBA", "P"):
+                img = img.convert("RGB")
+
+            # Simply scales down massive photos to 1200px max
+            # thumbnail() PRESERVES the original aspect ratio (No padding!)
+            img.thumbnail((1200, 1200)) 
+            img.save(img_path)
 
 class PetRating(models.Model):
     PetID = models.ForeignKey(Pet, on_delete=models.CASCADE)
