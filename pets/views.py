@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from .forms import ExtendedUserCreationForm, UploadForm, UserProfileForm
+from .forms import ExtendedUserCreationForm, UploadForm, UserProfileForm, CustomAuthenticationForm
 from .models import Bookmark, Pet, PetType, PetRating, UserProfile
 import datetime
 import json
@@ -129,6 +129,22 @@ def delete_account(request):
         return redirect('pets:home')
     
     return redirect('pets:profile')
+
+def login_view(request):
+    if request.method == 'POST':
+        # Pass the request and the POST data to your custom form
+        form = CustomAuthenticationForm(request, data=request.POST)
+        
+        # This is where ReCaptcha is actually verified!
+        if form.is_valid(): 
+            user = form.get_user()
+            auth_login(request, user)
+            messages.success(request, f"Welcome back, {user.username}!")
+            return redirect('pets:home')
+    else:
+        form = CustomAuthenticationForm()
+        
+    return render(request, 'pets/login.html', {'form': form})
 
 
 def sign_up(request):

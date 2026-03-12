@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 import os
+from pathlib import Path
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -137,9 +139,11 @@ MEDIA_URL = '/media/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # --- reCAPTCHA v3 Settings ---
-# These are Google's official testing keys. Replace with your live keys later.
-RECAPTCHA_PUBLIC_KEY = '6LfkSIgsAAAAAAEiEZn43-LQVKiONOu7Df-t6dDF'
-RECAPTCHA_PRIVATE_KEY = '6LfkSIgsAAAAAIOHIi6bYazXzFdjzm_W_3fzr5D-'
+# Load the reCAPTCHA keys from environment variables for security
+load_dotenv()  # Load environment variables from .env file
+RECAPTCHA_PUBLIC_KEY = os.getenv('RECAPTCHA_PUBLIC_KEY')
+RECAPTCHA_PRIVATE_KEY = os.getenv('RECAPTCHA_PRIVATE_KEY')
+
 RECAPTCHA_REQUIRED_SCORE = 0.85 # The threshold (0.0 to 1.0) for a human score
 RECAPTCHA_TESTING = True
 
