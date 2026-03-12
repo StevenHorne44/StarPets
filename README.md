@@ -50,6 +50,11 @@ python manage.py runserver
 
 ## Built with 
 
+* Python (Django): The backbone of the project, handling the database logic, user authentication, and star-rating signals.
+* HTML: Structured the various pages, from the pet gallery to user profiles.
+* CSS: Custom styling to ensure the "StarPets" branding is consistent and clean.
+* JavaScript: Enhances the user experience with interactive elements and dynamic button behaviors.
+* SQLite: Our development database for storing pet info and user data
 
 ## 👥 Contributors 
 * **Steven Horne**
