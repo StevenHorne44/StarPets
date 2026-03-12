@@ -1,14 +1,21 @@
 from django import forms
 from .models import Pet, PetType, UserProfile
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django_recaptcha.fields import ReCaptchaField
+from django_recaptcha.widgets import ReCaptchaV3
 from django.contrib.auth.models import User
 
 class ExtendedUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True, help_text="Enter your email here")
+    captcha = ReCaptchaField(widget=ReCaptchaV3)
 
     class Meta(UserCreationForm.Meta):
         model = User
         fields = UserCreationForm.Meta.fields + ("email",)
+        
+# Custom login form to inject the Captcha
+class CustomAuthenticationForm(AuthenticationForm):
+    captcha = ReCaptchaField(widget=ReCaptchaV3)
 
 
 class UploadForm(forms.ModelForm):

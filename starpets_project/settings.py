@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_recaptcha',
     'pets',
 ]
 
@@ -134,3 +135,13 @@ MEDIA_URL = '/media/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# --- reCAPTCHA v3 Settings ---
+# These are Google's official testing keys. Replace with your live keys later.
+RECAPTCHA_PUBLIC_KEY = '6LfkSIgsAAAAAAEiEZn43-LQVKiONOu7Df-t6dDF'
+RECAPTCHA_PRIVATE_KEY = '6LfkSIgsAAAAAIOHIi6bYazXzFdjzm_W_3fzr5D-'
+RECAPTCHA_REQUIRED_SCORE = 0.85 # The threshold (0.0 to 1.0) for a human score
+RECAPTCHA_TESTING = True
+
+# Silence the warning about using ReCaptcha test keys during local development
+SILENCED_SYSTEM_CHECKS = ['django_recaptcha.recaptcha_test_key_error']
