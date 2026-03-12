@@ -17,12 +17,25 @@ nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 2rem;
+    padding: 0.4rem 2rem;
     background-color: lightgrey;
     position: sticky;
     top: 0;            
     z-index: 1000;
     
+}
+
+/* Style for the currently active page link */
+nav ul li a.active {
+    color: #d97706;
+    font-weight: bold;
+    border-bottom: 2px solid #d97706;
+    padding-bottom: 2px; /* Gives the border some breathing room */
+}
+
+nav h1 {
+    margin: 0;          /* Kills the default browser spacing */
+    line-height: 1;     /* Ensures the text box perfectly hugs the letters */
 }
 
 nav ul {

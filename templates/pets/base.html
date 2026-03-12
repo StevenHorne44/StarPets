@@ -15,12 +15,12 @@
                 </a>
             </h1>
             <ul>
-                <li><a href="{% url 'pets:home' %}">Home</a></li>
+                <li><a href="{% url 'pets:home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a></li>
                 {% if user.is_authenticated %}
-                    <li><a href="{% url 'pets:top_pets' %}">Top Pets</a></li>
-                    <li><a href="{% url 'pets:categories' %}">Categories</a></li>
-                    <li><a href="{% url 'pets:bookmarks' %}">Bookmarks</a></li>
-                    <li><a href="{% url 'pets:upload' %}">Upload Pet</a></li>
+                    <li><a href="{% url 'pets:top_pets' %}" class="{% if request.resolver_match.url_name == 'top_pets' %}active{% endif %}">Top Pets</a></li>
+                    <li><a href="{% url 'pets:categories' %}" class="{% if request.resolver_match.url_name == 'categories' %}active{% endif %}">Categories</a></li>
+                    <li><a href="{% url 'pets:bookmarks' %}" class="{% if request.resolver_match.url_name == 'bookmarks' %}active{% endif %}">Bookmarks</a></li>
+                    <li><a href="{% url 'pets:upload' %}" class="{% if request.resolver_match.url_name == 'upload' %}active{% endif %}">Upload Pet</a></li>
                 {% else %}
                     <li><a href="{% url 'pets:login' %}">Top Pets</a></li>
                     <li><a href="{% url 'pets:login' %}">Categories</a></li>
