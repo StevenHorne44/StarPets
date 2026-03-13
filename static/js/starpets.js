@@ -125,17 +125,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    //-----------PROFILE DROPDOWN MENU------------------
-    const menuButton = document.getElementById('profile-dropdown');
-    const dropDownMenu = document.getElementById('dropdown-menu');
-
-    //prevent error if used not logged in
-    if (menuButton && dropDownMenu) {}
-        menuButton.addEventListener('click', (e) => {
-            dropDownMenu.classList.toggle('show'); //toggle display dropdown
-            e.stopPropagation(); //stop closing immediately
-        });
-
     // close menu if click outside it
     window.addEventListener('click', () => {
         if (dropDownMenu.classList.contains('show')){
