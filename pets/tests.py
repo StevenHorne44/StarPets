@@ -39,3 +39,13 @@ class PetModelTests(TestCase):
         bookmark = Bookmark.objects.create(PetID=self.pet, UserID=self.user)
         self.assertTrue(Bookmark.objects.filter(PetID=self.pet, UserID=self.user).exists())
     
+    def test_average_rating_calculation(self):
+        self.user2 = User.objects.create_user(username='testuser2', password='password123')
+        PetRating.objects.create(PetID=self.pet, UserID=self.user, stars=5)
+        PetRating.objects.create(PetID=self.pet, UserID=self.user2, stars=3)
+        
+        self.pet.refresh_from_db()
+        # (5+3)/2 = 4.0
+        self.assertEqual(self.pet.average_rating, 4.0)
+
+       
