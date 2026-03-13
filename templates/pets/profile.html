@@ -15,21 +15,54 @@
                 </h2>
                 
                 <div class="mb-4 d-flex justify-content-center">
-                    <div class="bg-light border border-2 rounded-circle d-flex align-items-center justify-content-center text-muted shadow-sm" style="width: 130px; height: 130px;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16"><path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/></svg>
+                    <div class="bg-light border border-2 rounded-circle d-flex align-items-center justify-content-center text-muted shadow-sm overflow-hidden" 
+                        style="width: 130px; height: 130px;">
+
+                        {% if user.userprofile.profile_picture %}   
+                            <img src="{{ user.userprofile.profile_picture.url }}" 
+                                alt="Profile Picture"
+                                class="w-100 h-100"
+                                style="object-fit: cover;">
+                        {% else %}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
+                                <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                            </svg>
+                        {% endif %}
                     </div>
                 </div>
 
                 <div class="d-grid gap-2 mb-4">
-                    <button class="btn btn-amber btn-sm fw-bold shadow-sm text-uppercase">Change Photo</button>
-                    <a href="#" class="btn btn-outline-secondary btn-sm fw-bold shadow-sm text-uppercase">Edit Bio</a>
+                    <form id="profile-pic-form" method="POST" action="{% url 'pets:edit_profile' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <input type="file" name="profile_picture" id="hidden-file-input" style="display: none;" accept="image/*" onchange="this.form.submit()">
+                
+                        <button type="button" 
+                                class="btn btn-amber btn-sm fw-bold shadow-sm text-uppercase"
+                                onclick="document.getElementById('hidden-file-input').click();">
+                                Change Photo
+                        </button>
+                    </form>
+
+                    <button type="button" onclick ="toggleBioEdit()" class="btn btn-outline-secondary btn-sm fw-bold shadow-sm text-uppercase">
+                        Edit Bio
+                    </button>
                 </div>
 
                 <div class="text-start mt-2">
                     <h3 class="fs-6 text-uppercase fw-bold text-muted mb-2">Biography</h3>
-                    <div class="p-3 bg-light border rounded shadow-sm small text-muted vintage-serif fst-italic" style="min-height: 120px; line-height: 1.6;">
-                        {{ user.userprofile.bio|default:user.username }} hasn't written a biography yet.
+
+                    <div id="bio-editor" 
+                        class="p-3 bg-light border rounded shadow-sm small text-muted vintage-serif fst-italic text-break" 
+                        style="min-height: 120px; line-height: 1.6; outline: none; word-wrap: break-word;" 
+                        contenteditable="false">
+                        {{ user.userprofile.description|default:"Click 'Edit Bio' to write your description!" }}
                     </div>
+
+                    <form id="hidden-bio-form" action="{% url 'pets:edit_profile' %}" method="POST" style="display: none;">
+                            {% csrf_token %}
+                            <textarea name="description" id="hidden-bio-textarea"></textarea>
+                    </form>
                 </div>
             </div>
         </div>
@@ -40,7 +73,14 @@
                 <h2 class="vintage-heading display-6 m-0 text-dark">{{ user.username }}'s Album</h2>
                 <div class="d-flex gap-2">
                     <a href="{% url 'pets:upload' %}" class="btn btn-amber fw-bold shadow-sm">Upload New Pet</a>
-                    <button class="btn btn-outline-danger fw-bold shadow-sm">Delete Account</button>
+
+                    <form action="{% url 'pets:delete_account' %}" method="POST" class="d-inline">
+                        <button type="submit"
+                                class="btn btn-outline-danger fw-bold shadow-sm"
+                                onclick="return confirm('Are you sure? This will delete your profile and all uploaded StarPets');">
+                                Delete Account</button>
+                    </form>
+            
                 </div>
             </div>
 
@@ -59,4 +99,27 @@
         </div>
     </div>
 </div>
+
+<script>
+        function toggleBioEdit() {
+            const bioBox = document.getElementById('bio-editor');
+            const editBtn = event.target;
+
+            if (bioBox.contentEditable === "false") {
+                bioBox.contentEditable = "true";
+                bioBox.classList.add("bg-white", "border-amber");
+                bioBox.focus();
+                editBtn.innerText = "SAVE CHANGES";
+                editBtn.classList.replace("btn-outline-secondary", "btn-amber");
+            } else {
+                const hiddenInput = document.getElementById("hidden-bio-textarea");
+                const hiddenForm = document.getElementById("hidden-bio-form");
+
+                hiddenInput.value = bioBox.innerText;
+                hiddenForm.submit();
+            }
+
+        }
+</script>
+
 {% endblock %}

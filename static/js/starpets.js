@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // close menu if click outside it
-    window.addEventListener('click', () => {
+    window.addEventListener('click', (e) => {
         if (dropDownMenu.classList.contains('show')){
             dropDownMenu.classList.remove('show');
         }
@@ -170,4 +170,10 @@ function getCookie(name) {
     return cookieValue;
 
 }
+
+
+
+// ------ toggle profile description edit --------------
+
+
 
