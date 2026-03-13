@@ -1,51 +1,60 @@
 {% extends 'pets/base.html' %}
-{% load static %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Welcome to Star Pets!{% endblock %}
 
 {% block content %}
-    <div class="home-container">
-        <h1>Welcome to StarPets!</h1>
-        <p> Home of pet lovers </p>
-    </div>
+<div class="container text-center py-5 mt-4">
     
+    <h1 class="display-4 vintage-heading mb-3 text-dark fw-bold">Welcome to Star Pets!</h1>
+    <p class="lead text-muted vintage-serif mb-5">Description</p>
 
-    <div class="feature-container">
-        {% if user.is_authenticated %}
-        <a href="{% url 'pets:upload' %}">
-        {% endif %}
-            <div class="feature-box">
-                <h2>Share Your Pets</h2>
-                <p>Upload photos of your beloved pets and let the world admire them.</p>
-                <img src = "{% static 'images/camera2.png' %}"/>
+    <div class="row row-cols-1 row-cols-md-3 g-4 mb-5">
+        
+        <div class="col">
+            <div class="polaroid-card h-100 p-4 border shadow-sm">
+                <div class="mb-3 text-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="55" height="55" fill="currentColor" class="bi bi-camera-fill" viewBox="0 0 16 16">
+                      <path d="M10.5 8.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+                      <path d="M2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4H2zm.5 2a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm9 2.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0z"/>
+                    </svg>
+                </div>
+                <h3 class="vintage-heading fs-4 mb-3 text-dark">Share Your Pets</h3>
+                <p class="text-muted vintage-serif small px-2">Upload photos of your beloved pets and let the world admire them.</p>
             </div>
-        </a>
+        </div>
 
-        {% if user.is_authenticated %}
-        <a href="{% url 'pets:categories' %}">
-        {% endif %}
-            <div class="feature-box">
-                <h2>Rate & Comment</h2>
-                <p>Give star ratings and leave comments on your favorite pet pictures.</p>
-                <img src = "{% static 'images/star2.png' %}"/>
+        <div class="col">
+            <div class="polaroid-card h-100 p-4 border shadow-sm">
+                <div class="mb-3" style="color: #f59e0b;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="55" height="55" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
+                      <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+                    </svg>
+                </div>
+                <h3 class="vintage-heading fs-4 mb-3 text-dark">Rate & Comment</h3>
+                <p class="text-muted vintage-serif small px-2">Give star ratings and leave comments on your favorite pet pictures.</p>
             </div>
-        </a>
+        </div>
 
-        {% if user.is_authenticated %}
-        <a href="{% url 'pets:top_pets' %}">
-        {% endif %}
-            <div class="feature-box">
-                <h2>Top Pets Leaderboard</h2>
-                <p>See which pets are trending on our weekly leaderboard.</p>
-                <img src = "{% static 'images/trophy2.png' %}"/>
-            </div>  
-        </a>
+        <div class="col">
+            <div class="polaroid-card h-100 p-4 border shadow-sm">
+                <div class="mb-3 text-success">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="55" height="55" fill="currentColor" class="bi bi-trophy-fill" viewBox="0 0 16 16">
+                      <path d="M2.5.5A.5.5 0 0 1 3 0h10a.5.5 0 0 1 .5.5c0 .538-.012 1.05-.034 1.536a3 3 0 1 1-1.133 5.89c-.79 1.865-1.878 2.777-2.833 3.011v2.173l1.425.356c.194.048.377.135.537.255L13.3 15.1a.5.5 0 0 1-.3.9H3a.5.5 0 0 1-.3-.9l1.838-1.379c.16-.12.343-.207.537-.255L6.5 13.11v-2.173c-.955-.234-2.043-1.146-2.833-3.012a3 3 0 1 1-1.132-5.89A33.076 33.076 0 0 1 2.5.5zm.099 2.54a2 2 0 0 0 .72 3.935c-.333-1.05-.588-2.346-.72-3.935zm10.083 3.935a2 2 0 0 0 .72-3.935c-.133 1.59-.388 2.885-.72 3.935z"/>
+                    </svg>
+                </div>
+                <h3 class="vintage-heading fs-4 mb-3 text-dark">Top Pets Leaderboard</h3>
+                <p class="text-muted vintage-serif small px-2">See which pets are trending on our weekly leaderboard.</p>
+            </div>
+        </div>
+        
     </div>
 
     {% if not user.is_authenticated %}
-    <div class="btn-container">
-            <button class="login-btn" onclick = "window.location.href='login'">Login</button>
-            <button class="signup-btn" onclick = "window.location.href='signup'">Sign Up</button>
+    <div class="d-flex justify-content-center gap-3 mt-4">
+        <a href="{% url 'pets:login' %}" class="btn btn-primary btn-lg px-5 fw-bold shadow-sm rounded-1">Login</a>
+        <a href="{% url 'pets:signup' %}" class="btn btn-success btn-lg px-5 fw-bold shadow-sm rounded-1">Register</a>
     </div>
     {% endif %}
+
+</div>
 {% endblock %}

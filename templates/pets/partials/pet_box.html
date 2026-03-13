@@ -1,74 +1,75 @@
 {% load pet_filters %}
 
-<!-- Reusable template for filling in a Pet Box -->
-
-<div class="pet-box {% if is_featured %}pet-box-featured{% endif %}">
-    <!-- Show the featured header if this pet is marked as featured -->
+<div class="polaroid-card {% if is_featured %}polaroid-featured{% endif %}">
+    
     {% if is_featured %}
-        <h2 style="padding: 15px 0 10px 0; margin: 0; font-size: 1.5rem;">
-            #1 Pet of the Week: {{ pet.name }}!
-        </h2>
+        <h2 class="text-center vintage-serif fs-4 fw-bold text-amber mb-3">★ #1 Pet of the Week ★</h2>
     {% endif %}
 
-    <!--Load Pet Picture if there is one-->
     {% if pet.picture %}
-        <div class="pet-image-wrapper" style="background-image: url('{{ pet.picture.url }}');">
-            <img src="{{ pet.picture.url }}" class="pet-box-image" alt="{{ pet.name }}">
+        <div class="pet-image-wrapper shadow-sm" style="background-image: url('{{ pet.picture.url }}');">
+            <img src="{{ pet.picture.url }}" alt="{{ pet.name }}" class="pet-box-image">
         </div>
     {% else %}
-    <!-- Placeholder if no picture is available -->
-        <div class="pet-box-image"></div> 
+        <div class="pet-image-wrapper bg-light border"></div> 
     {% endif %}
     
-    <!-- Pet Information -->
-    <div class="pet-box-content">
-        {% if not is_featured %} <!-- Show rank only if not featured, since featured already implies #1 -->
-            <h2 class="pet-box-header">
-                {% if rank %}#{{ rank }} {% endif %}{{ pet.name }}
+    <div class="pet-box-content d-flex flex-column flex-grow-1 text-center mt-3">
+        {% if not is_featured %} 
+            <h2 class="vintage-serif fw-bold fs-5 text-dark mb-2">
+                {% if rank %}<span class="text-amber">#{{ rank }}</span> {% endif %}{{ pet.name }}
             </h2>
         {% endif %}
 
         {% get_user_rating pet request.user as user_rating %}
-        <!-- User Rating Section -->
-        <div class="pet-box-rating interactive-rating" data-pet-id="{{ pet.id }}" data-user-rating="{{ user_rating }}">
-
-            <!-- Display user rating stars -->
-            <div class="user-rating-container">
-                <strong style="color: #374151;">Your Rating:</strong>
-                <span class="user-stars" style="letter-spacing: 2px; font-size: 1.2rem; cursor: pointer;" title="Click to rate!">
-                    <!-- Loop to display stars if user has rated the pet -->
-                        {% for _ in "12345" %}
-                            <span class="star" data-val="{{ forloop.counter }}" style="color: {% if user_rating >= forloop.counter %}#f59e0b{% else %}#e5e7eb{% endif %};">★</span>
-                        {% endfor %}
-                    </span>
+        <div class="interactive-rating d-flex flex-column align-items-center gap-1 mb-3" data-pet-id="{{ pet.id }}" data-user-rating="{{ user_rating }}">
+            <div class="user-rating-container d-flex align-items-center gap-2">
+                <strong class="text-muted small text-uppercase">Rating:</strong>
+                <span class="user-stars fs-5" style="cursor: pointer;" title="Click to rate!">
+                    {% for _ in "12345" %}
+                        <span class="star" data-val="{{ forloop.counter }}" style="color: {% if user_rating >= forloop.counter %}#f59e0b{% else %}#e7e5e4{% endif %}; transition: color 0.2s;">★</span>
+                    {% endfor %}
                 </span>
-
-                <!-- Show the numeric user rating next to the stars -->
-                <span class="user-rating-text" style="color: #6b7280; font-weight: bold; margin-left: 5px;">({{ user_rating }}/5)</span>
+                <span class="user-rating-text text-muted fw-bold small">({{ user_rating }}/5)</span>
             </div>
             
-            <!-- Display average rating stars -->
-            <div class="average-rating-container">
+            <div class="average-rating-container text-amber small">
                 {{ pet.average_rating|default:0|draw_stars }}
             </div>
+        </div> 
 
-        </div> <!-- Display average rating with stars, defaulting to 0 if no rating -->
-        <p class="pet-box-description">{{ pet.description }}</p>
+        <p class="text-muted small fst-italic vintage-serif" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+            "{{ pet.description }}"
+        </p>
     </div>
 
-    <!-- Action Buttons -->
-    <div class="pet-box-actions">
-        <button class="btn-pet-box btn-comment">Comment</button>
+    <div class="pet-box-actions d-flex justify-content-center gap-4 pt-3 mt-auto border-top">
+        <button class="btn-icon-action btn-comment" title="Comment">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        </button>
         
-        <!-- Show Unbookmark button if we're in the bookmarks page, otherwise show Bookmark button -->
-        {% if show_unbookmark %}
-            <button class="btn-pet-box btn-unbookmark toggle-bookmark-btn" data-pet-id="{{ pet.id }}">
-                Unbookmark
+        {% has_user_bookmarked pet request.user as is_bookmarked %}
+        {% if is_bookmarked %}
+            <button class="btn-icon-action btn-unbookmark toggle-bookmark-btn" data-pet-id="{{ pet.id }}" title="Unbookmark">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path>
+                    <line x1="2" x2="22" y1="2" y2="22" stroke="white" stroke-width="3"></line>
+                    <line x1="2" x2="22" y1="2" y2="22" stroke="#f59e0b" stroke-width="1"></line>
+                </svg>
             </button>
         {% else %}
-            <button class="btn-pet-box btn-bookmark toggle-bookmark-btn" data-pet-id="{{ pet.id }}">
-                Bookmark
+            <button class="btn-icon-action btn-bookmark toggle-bookmark-btn" data-pet-id="{{ pet.id }}" title="Bookmark">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg>
             </button>
+        {% endif %}
+
+        {% if show_delete %}
+            <form action="{% url 'pets:delete_pet' pet.id %}" method="post" class="m-0" onsubmit="return confirm('Are you sure you want to delete this pet? This cannot be undone.');">
+                {% csrf_token %}
+                <button type="submit" class="btn-icon-action text-danger border-0 bg-transparent p-1" title="Delete Pet">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                </button>
+            </form>
         {% endif %}
     </div>
 </div>

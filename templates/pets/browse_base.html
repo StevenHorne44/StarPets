@@ -1,19 +1,25 @@
 {% extends 'pets/base.html' %}
 
-{% load static %}
-
 {% block content %}
-<div class="browsing-header-container">
-    <h1 class="main-header">{% block page_header %}Browse Pets{% endblock %}</h1>
-    <!-- Filters Section -->
-    {% block filters %}{% endblock %}
-</div>
-
-<div class="browsing-container">
-    <!-- Grid Template -->
-    <div class="pet-grid">
-        {% block grid_content %}
+    <div class="mb-5 border-bottom pb-4 text-center">
+        {% block browse_header %}
+            <h1 class="display-5 vintage-heading">Browse Pets</h1>
         {% endblock %}
     </div>
-</div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% block grid_content %}
+            {% if pets %}
+                {% for pet in pets %}
+                    <div class="col">
+                        {% include 'pets/partials/pet_box.html' with pet=pet %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12 text-center py-5">
+                    <p class="text-muted vintage-serif fs-4 fst-italic">No pets found in this album.</p>
+                </div>
+            {% endif %}
+        {% endblock %}
+    </div>
 {% endblock %}

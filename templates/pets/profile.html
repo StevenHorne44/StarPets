@@ -1,69 +1,62 @@
-{% extends 'pets/browse_base.html' %}
+{% extends 'pets/base.html' %}
 {% load static %}
 
-{% block title %}{{ user.username }} Profile{% endblock %}
+{% block title %}{{ user.username }}'s Profile{% endblock %}
 
-{% block content %}        
-    <h1 class="main-header">{{ user.username }}'s profile</h1>
-    <div class="profile-layout-wrapper">
-        <aside class="profile-sidebar">
-
-            <div class="profile-image-section>">
-                <div class="profile-pic-placeholder">
-                    {% if user.userprofile.profile_picture %}
-                        <img src="{{ user.userprofile.profile_picture.url }}" alt="Profile Picture">
-                    {% else %}
-                        <img src="{% static 'images/defaultUser.png' %}" alt="Default Picture"> 
-                    {% endif %}
-                </div>
+{% block content %}
+<div class="container py-4 mt-2">
+    <div class="row g-5">
+        
+        <div class="col-12 col-md-4 col-lg-3">
+            <div class="polaroid-card text-center p-4 shadow-sm h-100">
                 
-                <form id="profile-pic-form" method="POST" action="{% url 'pets:edit_profile' %}" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <input type="file" name="profile_picture" id="hidden-file-input" style="display: none;" accept="image/*" onchange="this.form.submit()">
-                    <button type="button" class="change-profile-btn" onclick="document.getElementById('hidden-file-input').click();">
-                        Change Profile Pic
-                    </button>
-                </form>
+                <h2 class="vintage-heading fs-4 mb-4 pb-2 border-bottom text-dark">
+                    <span class="text-amber">★</span> {{ user.username }}
+                </h2>
+                
+                <div class="mb-4 d-flex justify-content-center">
+                    <div class="bg-light border border-2 rounded-circle d-flex align-items-center justify-content-center text-muted shadow-sm" style="width: 130px; height: 130px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16"><path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/></svg>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 mb-4">
+                    <button class="btn btn-amber btn-sm fw-bold shadow-sm text-uppercase">Change Photo</button>
+                    <a href="#" class="btn btn-outline-secondary btn-sm fw-bold shadow-sm text-uppercase">Edit Bio</a>
+                </div>
+
+                <div class="text-start mt-2">
+                    <h3 class="fs-6 text-uppercase fw-bold text-muted mb-2">Biography</h3>
+                    <div class="p-3 bg-light border rounded shadow-sm small text-muted vintage-serif fst-italic" style="min-height: 120px; line-height: 1.6;">
+                        {{ user.userprofile.bio|default:user.username }} hasn't written a biography yet.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-8 col-lg-9">
+            
+            <div class="d-flex justify-content-between align-items-end mb-4 pb-3 border-bottom">
+                <h2 class="vintage-heading display-6 m-0 text-dark">{{ user.username }}'s Album</h2>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'pets:upload' %}" class="btn btn-amber fw-bold shadow-sm">Upload New Pet</a>
+                    <button class="btn btn-outline-danger fw-bold shadow-sm">Delete Account</button>
+                </div>
             </div>
 
-            <div class="profile-description-section">
-                <h3>Description</h3>
-                <form action="{% url 'pets:edit_profile' %}" method="POST">
-                    {% csrf_token %}
-                        <textarea name="description" class="profile-description-box">{{ user.userprofile.description|default:"Enter your description here!" }}</textarea>
-                        <button type="submit" class="save-desc-btn">Save Description</button>
-                </form>
+            <div class="row row-cols-1 row-cols-md-2 g-4">
+                {% for pet in user.pet_set.all %}
+                    <div class="col">
+                        {% include 'pets/partials/pet_box.html' with pet=pet show_delete=True %}
+                    </div>
+                {% empty %}
+                    <div class="col-12 text-center py-5">
+                        <p class="text-muted vintage-serif fs-5 fst-italic">The camera hasn't started rolling yet. Upload your first pet!</p>
+                    </div>
+                {% endfor %}
             </div>
 
-            <form action="{% url 'pets:delete_account' %}" method = "post">
-                {% csrf_token %}
-                <button type="submit" 
-                        class="delete-account-btn"
-                        onclick="return confirm('Are you sure? This will delete your profile and all uploaded StarPets');">
-                        DELETE ACCOUNT
-                </button>  
-            </form>
-
-        </aside>
-
-        <main class="profile-pet-content">
-                <h2 class = "profile-pet-section-title">{{ user.username }}'s StarPets!</h2>
-                
-                <div class="delete-pet">
-                    <a href="{% url 'pets:select_pet_delete' %}">Delete Pet</a>
-                </div>
-
-                <div class="pet-grid">
-                    {% for pet in pets %}
-                        {% include 'pets/partials/pet_box.html' %}
-                    {% empty %}
-                        <div class="no-user-pet-message">
-                            <p>You haven't uploaded any pets yet.</p>
-                            <a href="{% url 'pets:upload' %}" class="btn-pet-box btn-comment">Upload your first pet!</a>
-                        </div>
-                    {% endfor %}
-
-                </div>
-        </main>
+        </div>
     </div>
+</div>
 {% endblock %}

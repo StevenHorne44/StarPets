@@ -1,528 +1,155 @@
-.home-container {
-    text-align: center;
+/* --- VINTAGE HOLLYWOOD THEME --- */
+:root {
+    --amber-main: #f59e0b;
+    --amber-dark: #d97706;
+    --stone-bg: #fcfbfa;
+    --stone-text: #292524;
+    --stone-muted: #78716c;
 }
 
-.main-header {
-    text-align: left;
-    border: 2px solid #3b82f6;
-    border-radius: 8px;
-    padding: 10px 40px;
-    display: inline-block;
-    text-align: center;
-    margin-bottom: 20px;
-    color: #1f2937;
+body.vintage-bg {
+    background-color: var(--stone-bg);
+    color: var(--stone-text);
 }
 
-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.4rem 2rem;
-    background-color: lightgrey;
-    position: sticky;
-    top: 0;            
-    z-index: 1000;
-    
+.vintage-heading {
+    font-family: Georgia, serif;
+    font-weight: 900;
 }
 
-/* Style for the currently active page link */
-nav ul li a.active {
-    color: #d97706;
-    font-weight: bold;
-    border-bottom: 2px solid #d97706;
-    padding-bottom: 2px; /* Gives the border some breathing room */
-}
+.vintage-serif { font-family: Georgia, serif; }
+.text-amber { color: var(--amber-main) !important; }
+.text-muted { color: var(--stone-muted) !important; }
 
-nav h1 {
-    margin: 0;          /* Kills the default browser spacing */
-    line-height: 1;     /* Ensures the text box perfectly hugs the letters */
-}
+/* Navigation */
+.vintage-nav { background-color: white; }
+.vintage-nav .nav-link { color: var(--stone-muted); transition: color 0.2s; }
+.vintage-nav .nav-link:hover { color: var(--amber-main); }
+.vintage-footer { background-color: white; }
 
-nav ul {
-    display: flex;
-    list-style: none;
-    gap: 40px;
-}
+/* Custom Buttons */
+.btn-amber { background-color: var(--amber-main); color: white; border: none; }
+.btn-amber:hover { background-color: var(--amber-dark); color: white; }
+.btn-outline-amber { border: 2px solid var(--amber-main); color: var(--amber-main); }
+.btn-outline-amber:hover { background-color: var(--amber-main); color: white; }
 
-nav a {
-    text-decoration: none;
-    color: black;
-    font-weight: bold;
-}
-
-.feature-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    padding: 40px;
-    gap: 20px;
-   
-}
-
-.feature-box {
-    border: 1px solid black;
-    background-color: #d1d5db ;
-    border-radius: 8px;
-    padding: 20px;
-    text-align: center;
-    flex: 1; 
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-
-
-.login-btn {
-    background-color: #3b82f6; 
-    color: white;
-    border:none;
-    padding: 5px 10px;
-    border-radius: 5px;
-
-}
-
-.login-btn:hover {
-    background-color: #2980b9;
-}
-
-.login-btn, .signup-btn{
-    cursor: pointer;
-    transition: backround-color 0.3 ease;
-}
-
-.signup-btn:hover {
-    background-color: #27ae60;
-}
-
-.signup-btn {
-    background-color: #10b981; 
-    color: white;
-    border:none;
-    padding: 5px 10px;
-    border-radius: 5px;
-
-}
-
-.btn-container {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-}
-
-
-
-.footer {
-    text-align: center;
-    background-color: lightgray;
-    width: 100%;
-    margin-top: 40px;
-}
-
-.footer footer {
-    font-family: "Open Sans", sans-serif;
-}
-
-
-/*login/signup pages */
-
-input[type="text"], input[type="password"], input[type="email"] {
-    width: 100%;
-    padding: 12px;
-    margin: 8px 0;
-    display: inline-block;
-    border: 1px solid #ccc;
+/* --- POLAROID CARDS --- */
+.polaroid-card {
+    background: white;
+    padding: 15px;
+    border: 1px solid #e7e5e4;
     border-radius: 4px;
-    box-sizing: border-box; 
-}
-
-.login-submit-btn {
-    background-color: #3498db;
-    color: white;
-    border: none;
-    cursor: pointer;
-    width: 100%;
-    padding: 14px;
-    font-size: 1.1rem;
-    transition: backround 0.3s;
-}
-
-.login-submit-btn:hover {
-    background-color: #2980b9;
-}
-
-.signup-submit-btn {
-    background-color: #10b981;
-    color: white;
-    border: none;
-    cursor: pointer;
-    width: 100%;
-    padding: 14px;
-    font-size: 1.1rem;
-    transition: backround 0.3s;
-}
-
-.signup-submit-btn:hover {
-    background-color: #27ae60;
-}
-
-/* Browsing Grid Layout */
-.browsing-header-container {
-    margin-bottom: 20px;
-    padding: 0 20px;
-}
-
-/* 3-in-a-row grid */
-.pet-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    padding: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-/* Pet Box */
-.pet-box {
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    overflow: hidden; /* Handles roundness */
-    background-color: #fff;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
     display: flex;
     flex-direction: column;
 }
 
-/* The Wrapper (Controls the shape and hides blurry edges) */
+.polaroid-card:hover {
+    transform: scale(1.02) rotate(-1deg);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.polaroid-featured {
+    border: 4px solid var(--amber-main);
+}
+
+/* --- THE IMAGE BLUR LOGIC (Preserved from your original code) --- */
 .pet-image-wrapper {
     position: relative;
     width: 100%;
     aspect-ratio: 4 / 3;
-    overflow: hidden; /* Prevents the blur from spilling out of the box */
-    border-bottom: 1px solid #ccc;
-    background-color: #111827; /* Dark fallback */
+    overflow: hidden;
+    border: 1px solid #d6d3d1;
+    background-color: #111827; 
 }
 
-/* The Blurred Background (Inherits the image from the HTML inline style!) */
 .pet-image-wrapper::before {
     content: "";
     position: absolute;
-    /* Pin perfectly to the edges */
-    top: -10%; 
-    left: -10%; 
-    right: -10%; 
-    bottom: -10%;
-
-    background-image: inherit; /* Copies the URL from the parent div */
+    top: -10%; left: -10%; right: -10%; bottom: -10%; 
+    background-image: inherit; 
     background-size: cover;
     background-position: center;
-    filter: blur(20px) brightness(0.5); /* Blurs and dims the background */
-
+    filter: blur(20px) brightness(0.5); 
     z-index: 1;
 }
 
 .pet-image-wrapper .pet-box-image {
     position: absolute; 
-    top: 0;
-    left: 0;
-    
-    z-index: 2; /* Ensures the sharp image sits on top of the blur */
-    width: 100%;
-    height: 100%;
-    
-    /* Ensures it never crops, center distributes the empty space equally */
-    object-fit: contain; 
-    object-position: center; 
-    
+    top: 0; left: 0;
+    z-index: 2; 
+    width: 100%; height: 100%;
+    object-fit: contain !important; 
+    object-position: center !important; 
     background-color: transparent; 
-    border-bottom: none; /* Border moved to wrapper */
 }
 
-.pet-box-content {
-    padding: 15px;
-    flex-grow: 1;
-}
+/* Banner specific ratio */
+.polaroid-featured .pet-image-wrapper { aspect-ratio: 21 / 9; }
 
-.pet-box-header {
-    margin: 0 0 10px 0;
-    font-size: 1.25rem;
-}
-
-.pet-box-rating {
-    margin-bottom: 10px;
-    font-size: 0.9rem;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 5px;
-    min-height: 45px;
-}
-
-.pet-box-featured .pet-box-rating {
-    align-items: center; 
-}
-
-.pet-box-description {
-    font-size: 0.9rem;
-    color: #4b5563;
-    margin-bottom: 20px;
-}
-
+/* Action Buttons Grid */
 .pet-box-actions {
     display: flex;
-    justify-content: space-between;
-    padding: 15px;
-    border-top: 1px solid #eee;
-}
-
-/* General Button Padding */
-.btn-pet-box {
-    padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-    color: white;
-}
-
-/* Action-specific colors */
-.btn-comment { background-color: #3b82f6; }
-.btn-bookmark { background-color: #10b981; }
-.btn-unbookmark { background-color: #ef4444; }
-
-/* --- Top Pets Featured Banner --- */
-
-.pet-box-featured {
-    grid-column: 1 / -1; 
-    text-align: center;  
-}
-
-.pet-box-featured .pet-image-wrapper {
-    aspect-ratio: 21 / 9; /* The ultra-wide banner size */
-}
-
-.pet-box-featured .pet-box-rating {
-    display: flex;
     justify-content: center;
+    gap: 30px;
+    padding-top: 15px;
+    margin-top: auto;
+    border-top: 1px solid #f5f5f4;
 }
 
-.user-rating-container, .average-rating-container {
-    display: flex;
-    align-items: center;
-    gap: 5px;
+.btn-icon-action {
+    background: none; border: none; padding: 5px; cursor: pointer;
+    color: var(--stone-muted); transition: color 0.2s;
 }
+.btn-icon-action:hover { color: var(--amber-main); }
+.btn-unbookmark { color: var(--amber-main); }
 
-/* Hide the average rating by default, show when mouse hovers over the rating block */
-.average-rating-container {
-    display: none; 
+/* --- DJANGO FORM STYLING --- */
+.vintage-form p { margin-bottom: 1.5rem; text-align: left; }
+.vintage-form label { 
+    font-weight: 700; 
+    margin-bottom: 0.5rem; 
+    display: block; 
+    color: var(--stone-muted); 
+    text-transform: uppercase; 
+    font-size: 0.85rem; 
+    letter-spacing: 1px; 
 }
-.interactive-rating:hover .average-rating-container {
-    display: flex;
+.vintage-form input[type="text"],
+.vintage-form input[type="file"],
+.vintage-form input[type="email"],
+.vintage-form input[type="password"],
+.vintage-form textarea,
+.vintage-form select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #e7e5e4;
+    border-radius: 4px;
+    background-color: #fafaf9;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    font-family: inherit;
 }
-
-/* Smooth transition for star color changes */
-.user-stars .star {
-    transition: color 0.2s ease;
+.vintage-form input:focus,
+.vintage-form textarea:focus,
+.vintage-form select:focus {
+    outline: none;
+    border-color: var(--amber-main);
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
 }
-
-
-/* --- Global Body Layout --- */
-body {
-    margin: 0;
+.vintage-form .helptext { 
+    font-size: 0.8rem; 
+    color: #a8a29e; 
+    margin-top: 0.25rem; 
+    display: block; 
+    font-style: italic;
+}
+.vintage-form ul.errorlist {
+    color: #dc3545;
+    list-style: none;
     padding: 0;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-}
-
-/* Main content to stretches and fills all available empty space */
-.main-content {
-    flex-grow: 1;
-}
-
-
-/* -------------PROFILE SECTION CSS------------------ */
-
-.profile-layout-wrapper {
-    display: flex;
-    gap: 40px;
-    max-width: 100%;
-    margin: 20px auto;
-    padding: 0 20px;
-}
-
-
-.profile-sidebar {
-    flex: 0 0 300px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.profile-pic-placeholder {
-    width: 200px;
-    height: 200px;
-    background-color: #ddd;
-    border: 2px solid #333;
-    margin-bottom: 10px;
-    overflow: hidden;
-}
-
-.profile-pic-placeholder img{
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.profile-pet-content {
-    flex: 1;
-}
-
-.change-profile-btn, .delete-account-btn, .save-desc-btn{
-    cursor: pointer;
-    color: white;
-    border:none;
-    padding: 5px 10px;
-    border-radius: 5px;
-}
-
-.change-profile-btn {
-    background-color: #3b82f6;
-}
-
-.delete-account-btn {
-    background-color: #ef4444;
-}
-
-.save-desc-btn {
- background-color: #10b981;
-}
-
-.profile-description-box {
-    width: 100%;
-    padding: 12px;
-    border-color: #3b82f6;
-    border-radius: 8px;
-    background-color: white;
-    resize: none;
-    margin-bottom: 10px;
-    box-sizing: border-box;
-}
-
-.no-user-pet-message {
-    text-align: center;
-    grid-column: 1 / -1;
-    padding: 40px;
-}
-
-.profile-pet-content{
-    width: 75%;
-    height: 100%;
-    float: right;
-}
-
-
-/*-----------------PROFILE DROPDOWN CSS-------------------------*/
-
-.to-profile-div{
-    position:relative;
-    display: inline-block;
-}
-
-/* button to go to user profile page */
-.go-to-profile-btn {
-    cursor: pointer;
-    background: #e3a807;
-    color: white;
-    border: none;
-    min-width: 100px;
-    padding: 8px 15px;
-    border-radius: 5px;
     font-weight: bold;
-}
-
-.dropdown-content{
-    display:none;
-    position:absolute;
-    top: 100%;
-    right: 0;
-    margin-top: 8px;
-    background-color: white;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
-    border-radius: 8px;
-    overflow: hidden; /* stop link hover going past corner */
-    z-index: 1000; /*make sure dropdown stays on top */
-}
-
-.dropdown-content a, .dropdown-content button {
-    display: block;
-    width: 100%;
-    box-sizing: border-box;
-    padding: 12px 16px;
-    text-decoration: none;
-    text-align: left;
-    font-size: 14px;
-    font-family: inherit;
-    font-weight: bold;
-    color: white;
-    border: none;
-    cursor: pointer;
-    transition: background 0.3s;
-
-
-}
-
-.profile-link {
-    background-color:#3b82f6;
-}
-
-.profile-link:hover{
-    background-color: #2980b9;
-}
-
-.logout-btn{
-    background-color: #ef4444;
-}
-
-.logout-btn:hover {
-    background-color: #d71919;
-}
-
-.show {
-    display: block;
-}
-
-.delete-pet-btn {
-    background-color: #d71919;
-}
-
-/*--------------------- END OF PROFILE DROPDOWN CSS------------------- */
-
-
-/* upload page css */
-.form-container {
-    width: 450px;
-    margin: 30px auto;      
-    padding: 25px;
-
-    background-color: #d1d5db ;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-
-    box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
-    text-align: left;
-}
-
-.upload-btn {
-    background-color: #2980b9;
-    color : white;
-    border: none;
-    min-width: 100px;
-    padding: 8px 15px;
-    border-radius: 5px;
-    font-weight: bold;
-}
-
-.form-group {
-    font-size: 20px;
-    font-family: inherit;
-    margin-bottom: 15px;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
 }

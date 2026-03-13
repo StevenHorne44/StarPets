@@ -1,21 +1,34 @@
 {% extends 'pets/browse_base.html' %}
 
-{% load static %}
-
 {% block title %}Top Pets{% endblock %}
 
-{% block page_header %}Top Pets of the Week{% endblock %}
+{% block browse_header %}
+    <h1 class="display-4 vintage-heading"><span class="text-amber">★</span> Top Pets of the Week <span class="text-amber">★</span></h1>
+    
+    {% if top_pets %}
+        {% with first_pet=top_pets|first %}
+        <div class="container px-0 mt-5 text-start"> 
+            <div class="row">
+                <div class="col-12">
+                    {% include 'pets/partials/pet_box.html' with pet=first_pet is_featured=True rank=1 %}
+                </div>
+            </div>
+        </div>
+        {% endwith %}
+    {% endif %}
+{% endblock %}
 
 {% block grid_content %}
-    {% for pet in top_pets %}
-
-    {% if forloop.first %}
-        {% include 'pets/partials/pet_box.html' with is_featured=True %}
+    {% if top_pets %}
+        {% for pet in top_pets|slice:"1:" %}
+            <div class="col">
+                {% include 'pets/partials/pet_box.html' with pet=pet rank=forloop.counter|add:1 is_featured=False %}
+            </div>
+        {% endfor %}
+        
     {% else %}
-        {% include 'pets/partials/pet_box.html' with rank=forloop.counter is_featured=False %}
+        <div class="col-12 text-center py-5">
+            <p class="text-muted vintage-serif fs-4 fst-italic">No pets have been rated yet.</p>
+        </div>
     {% endif %}
-
-    {% empty %}
-        <p>No pets have been rated yet.</p>
-    {% endfor %}
 {% endblock %}

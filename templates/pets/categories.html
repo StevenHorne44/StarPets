@@ -1,31 +1,25 @@
 {% extends 'pets/browse_base.html' %}
+{% load pet_filters %} 
 
 {% block title %}Categories{% endblock %}
 
-{% block page_header %}Browse Pet Categories{% endblock %}
-
-{% block filters %}
-<div class="filter-conatainer" style="margin-bottom: 20px;">
-    <!-- Automatic page refresh on filter change -->
-    <form method="GET" action="{% url 'pets:categories' %}">
-        <label for="type"><strong>Filter by :</strong></label>
-        <!-- Add type={{ selected_type }} at the end of the URL -->
-        <select name="type" id="type" onchange="this.form.submit()" style="padding: 5px; margin-left: 10px;">
-            <option value="all">All Animals</option>
-            {% for pet_type in pet_types %}
-                <option value="{{ pet_type.type_name }}" {% if selected_type == pet_type.type_name %}selected{% endif %}>
-                    {{ pet_type.type_name }}
-                </option>
+{% block browse_header %}
+    <h1 class="display-4 vintage-heading mb-4"><span class="text-amber">★</span> Pet Categories <span class="text-amber">★</span></h1>
+    
+    <div class="dropdown mb-5 text-center">
+        <button class="btn btn-outline-amber fw-bold rounded-pill px-5 py-2 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Select a Category
+        </button>
+        <ul class="dropdown-menu shadow-sm border-0 mt-2" style="max-height: 300px; overflow-y: auto;">
+            <li><a class="dropdown-item fw-bold text-muted" href="{% url 'pets:categories' %}">All Categories</a></li>
+            <li><hr class="dropdown-divider"></li>
+            {% for category in categories %}
+                <li>
+                    <a class="dropdown-item fw-bold" href="{% url 'pets:category_detail' category.slug %}">
+                        {{ category.name }}
+                    </a>
+                </li>
             {% endfor %}
-        </select>
-    </form>
-</div>
-{% endblock %}
-
-{% block grid_content %}
-    {% for pet in pets  %}
-        {% include 'pets/partials/pet_box.html' %}
-    {% empty %}
-        <p>No pets found in this category.</p>
-    {% endfor %}
+        </ul>
+    </div>
 {% endblock %}

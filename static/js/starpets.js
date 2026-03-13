@@ -26,12 +26,24 @@ document.addEventListener('DOMContentLoaded', function () {
                 })
                 .then(data => {
                     if (typeof data.is_bookmarked !== 'undefined') {
-                        if (data.is_bookmarked === true) {
-                            btn.classList.replace('btn-bookmark', 'btn-unbookmark');
-                            btn.textContent = 'Unbookmark';
+                        if (data.is_bookmarked === true || data.is_bookmarked === true) {
+                            button.className = 'btn-icon-action btn-unbookmark toggle-bookmark-btn';
+                            button.title = 'Unbookmark';
+                            button.innerHTML = `
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path>
+                                    <line x1="2" x2="22" y1="2" y2="22" stroke="white" stroke-width="3"></line>
+                                    <line x1="2" x2="22" y1="2" y2="22" stroke="#f59e0b" stroke-width="1"></line>
+                                </svg>
+                            `;
                         } else {
-                            btn.classList.replace('btn-unbookmark', 'btn-bookmark');
-                            btn.textContent = 'Bookmark';
+                            button.className = 'btn-icon-action btn-bookmark toggle-bookmark-btn';
+                            button.title = 'Bookmark';
+                            button.innerHTML = `
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path>
+                                </svg>
+                            `;
                         }
                     } else {
                         console.error("Backend did not return 'is_bookmarked'.", data);

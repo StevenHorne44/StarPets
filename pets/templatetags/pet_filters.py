@@ -1,6 +1,6 @@
 from django import template
 from django.utils.safestring import mark_safe
-from pets.models import PetRating
+from pets.models import Bookmark, PetRating
 
 #registering the template library
 register = template.Library()
@@ -43,3 +43,10 @@ def get_user_rating(pet, user):
         if rating:
             return rating.stars
     return 0
+
+@register.simple_tag
+def has_user_bookmarked(pet, user):
+    """Returns True if the user has bookmarked this pet, False otherwise."""
+    if user.is_authenticated:
+        return Bookmark.objects.filter(PetID=pet, UserID=user).exists()
+    return False
