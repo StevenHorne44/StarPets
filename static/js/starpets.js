@@ -143,7 +143,24 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    // --- CATEGORY FILTER LOGIC ---
+    const filterItems = document.querySelectorAll('.category-filter-item');
+    const categoryInput = document.getElementById('category-input');
+    const filterForm = document.getElementById('filter-form');
 
+    // Only run this script if we are actually on the Categories page
+    if (filterItems.length > 0 && categoryInput && filterForm) {
+        filterItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault(); // Stops the page from jumping to the top from the href="#"
+                
+                // Get the value from the data attribute and submit
+                const value = this.getAttribute('data-value');
+                categoryInput.value = value;
+                filterForm.submit();
+            });
+        });
+    }
 
 });
 

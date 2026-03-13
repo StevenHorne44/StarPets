@@ -55,6 +55,24 @@ body.vintage-bg {
     border: 4px solid var(--amber-main);
 }
 
+/* --- CUSTOM DROPDOWN STYLING --- */
+.vintage-dropdown .dropdown-item {
+    transition: background-color 0.2s, color 0.2s;
+    padding: 0.5rem 1.5rem;
+}
+
+.vintage-dropdown .dropdown-item:hover,
+.vintage-dropdown .dropdown-item:focus {
+    background-color: #fafaf9; /* Very light stone background */
+    color: var(--amber-main) !important;
+}
+
+/* Custom Active State for the selected filter */
+.active-amber {
+    color: var(--amber-dark) !important;
+    background-color: #fef3c7 !important; /* Very light amber background */
+}
+
 /* --- THE IMAGE BLUR LOGIC (Preserved from your original code) --- */
 .pet-image-wrapper {
     position: relative;

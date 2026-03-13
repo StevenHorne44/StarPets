@@ -4,22 +4,55 @@
 {% block title %}Categories{% endblock %}
 
 {% block browse_header %}
-    <h1 class="display-4 vintage-heading mb-4"><span class="text-amber">★</span> Pet Categories <span class="text-amber">★</span></h1>
+    <h1 class="display-4 vintage-heading mb-5"><span class="text-amber">★</span> Pet Categories <span class="text-amber">★</span></h1>
     
-    <div class="dropdown mb-5 text-center">
-        <button class="btn btn-outline-amber fw-bold rounded-pill px-5 py-2 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Select a Category
-        </button>
-        <ul class="dropdown-menu shadow-sm border-0 mt-2" style="max-height: 300px; overflow-y: auto;">
-            <li><a class="dropdown-item fw-bold text-muted" href="{% url 'pets:categories' %}">All Categories</a></li>
-            <li><hr class="dropdown-divider"></li>
-            {% for category in categories %}
-                <li>
-                    <a class="dropdown-item fw-bold" href="{% url 'pets:category_detail' category.slug %}">
-                        {{ category.name }}
-                    </a>
-                </li>
-            {% endfor %}
-        </ul>
+    <div class="d-flex justify-content-start mb-4">
+        
+        <form id="filter-form" method="GET" action="{% url 'pets:categories' %}" class="d-flex align-items-center gap-3 bg-white p-2 px-4 border rounded-pill shadow-sm" style="width: fit-content;">
+            
+            <span class="text-uppercase fw-bold text-muted m-0 small" style="letter-spacing: 1px;">
+                Filter by:
+            </span>
+            
+            <input type="hidden" name="type" id="category-input" value="{{ selected_type|default:'all' }}">
+
+            <div class="dropdown">
+                
+                <button class="btn btn-link text-amber fw-bold text-decoration-none dropdown-toggle p-0 vintage-serif fs-5" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    {% if selected_type == 'all' or not selected_type %}
+                        All Animals
+                    {% else %}
+                        {{ selected_type|title }}
+                    {% endif %}
+                </button>
+                
+                <ul class="dropdown-menu shadow border-0 mt-2 rounded-3 vintage-dropdown">
+                    <li>
+                        <a class="dropdown-item category-filter-item vintage-serif fw-bold {% if selected_type == 'all' or not selected_type %}active-amber{% else %}text-muted{% endif %}" href="#" data-value="all">
+                            All Animals
+                        </a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    
+                    {% for p_type in pet_types %}
+                        <li>
+                            <a class="dropdown-item category-filter-item vintage-serif fw-bold {% if selected_type == p_type.type_name %}active-amber{% else %}text-muted{% endif %}" href="#" data-value="{{ p_type.type_name }}">
+                                {{ p_type.type_name|title }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+
+            </div>
+        </form>
     </div>
+
+    <script>
+        function submitFilter(value) {
+            // Update the hidden input
+            document.getElementById('category-input').value = value;
+            // Submit the form
+            document.getElementById('filter-form').submit();
+        }
+    </script>
 {% endblock %}
