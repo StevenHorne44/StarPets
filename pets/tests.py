@@ -1,5 +1,6 @@
 from urllib import response
 from django.contrib.auth.models import User
+from django.urls import reverse
 from .models import Bookmark, Pet, PetRating, PetType
 from django.test import TestCase
 
@@ -15,6 +16,7 @@ class HomePageTests(TestCase):
         response = self.client.get('/')
         self.assertContains(response, 'Welcome to StarPets!')
 
+# model testsS
 # Tests for pet model 
 class PetModelTests(TestCase):
     # Not a test
@@ -48,4 +50,35 @@ class PetModelTests(TestCase):
         # (5+3)/2 = 4.0
         self.assertEqual(self.pet.average_rating, 4.0)
 
-       
+
+# view tests
+# tests for top pets view 
+class TopPetsViewTests(TestCase):
+    
+    def setUp(self):
+        # create test user
+        self.user = User.objects.create_user(username='testuser', password='password123')
+    
+    # test that user cannot access pages unless logged in
+    def test_login_required(self):
+        #for top pets access
+        response = self.client.get(reverse('pets:top_pets'))
+        self.assertEqual(response.status_code, 302)
+        #for category access
+        response = self.client.get(reverse('pets:categories'))
+        self.assertEqual(response.status_code, 302)
+        #for bookmarks access
+        response = self.client.get(reverse('pets:bookmarks'))
+        self.assertEqual(response.status_code, 302)
+        #for upload page
+        response = self.client.get(reverse('pets:upload'))
+        self.assertEqual(response.status_code, 302)
+
+    # test that when no pets, page still loads
+    def test_top_pets_empty(self):
+        self.client.login(username='testuser', password='password123')
+        response = self.client.get(reverse('pets:top_pets'))
+        self.assertEqual(response.status_code, 200)
+
+    
+        
