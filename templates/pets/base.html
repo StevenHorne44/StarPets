@@ -79,5 +79,6 @@
         const RATE_URL = "{% url 'pets:rate_pet' 0 %}".replace('0/', '');
     </script>
     <script src="{% static 'js/starpets.js' %}"></script>
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

@@ -7,14 +7,23 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from .forms import ExtendedUserCreationForm, UploadForm, UserProfileForm, CustomAuthenticationForm
-from .models import Bookmark, Pet, PetType, PetRating, UserProfile
+from .models import Bookmark, Pet, PetType, PetRating, UserProfile, Comment
 import datetime
 import json
 
-# Create your views here.
-
 def home(request):
-    return render(request, 'pets/home.html')
+    pets = Pet.objects.all()
+    if request.user.is_authenticated:
+        for pet in pets:
+            pet.user_commented = Comment.objects.filter(
+                PetID=pet, 
+                UserID=request.user
+            ).exists()
+    else:
+        for pet in pets:
+            pet.user_commented = False
+    
+    return render(request, 'pets/home.html', {'pets': pets})
 
 @login_required
 def top_pets(request):
@@ -45,6 +54,13 @@ def categories(request):
         pets = Pet.objects.filter(TypeID__type_name=selected_type)
     else:
         pets = Pet.objects.all()
+    
+    # Add comment information for each pet
+    for pet in pets:
+        pet.user_commented = Comment.objects.filter(
+            PetID=pet, 
+            UserID=request.user
+        ).exists()
 
     # Add to the context dictionary the list of pets, types and selected type
     context = {
@@ -58,6 +74,12 @@ def categories(request):
 def bookmarks(request):
     # Fetch the pets that are bookmarked by the user
     bookmarked_pets = Pet.objects.filter(bookmark__UserID=request.user)
+    
+    for pet in bookmarked_pets:
+        pet.user_commented = Comment.objects.filter(
+            PetID=pet, 
+            UserID=request.user
+        ).exists()
     
     # Add the bookmarked pets to the context dictionary and render the bookmarks template
     context = {
@@ -200,3 +222,186 @@ def delete_pet(request, pet_id):
     
     return render(request, 'pets/confirm_delete.html', {'pet': pet})
 
+# comments
+
+@login_required
+def add_comment(request, pet_id):
+    """
+    View for adding a comment to a pet
+    """
+    pet = get_object_or_404(Pet, id=pet_id)
+    
+    # Check for existing comment
+    if Comment.objects.filter(PetID=pet, UserID=request.user).exists():
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'error': 'You have already commented on this pet'}, status=400)
+        messages.error(request, 'You have already commented on this pet.')
+        return redirect('pets:home')
+    
+    if request.method == 'POST':
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            try:
+                data = json.loads(request.body)
+                content = data.get('content', '')
+            except:
+                content = request.POST.get('content', '')
+        else:
+            content = request.POST.get('content', '')
+        
+        # check if valid
+        if not content or len(content.strip()) == 0:
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'error': 'Comment cannot be empty'}, status=400)
+            messages.error(request, 'Comment cannot be empty.')
+            return redirect('pets:home')
+        
+        if len(content) > 200:
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'error': 'Comment is too long (max 200 characters)'}, status=400)
+            messages.error(request, 'Comment is too long (max 200 characters).')
+            return redirect('pets:home')
+        
+        # create and save
+        comment = Comment(
+            PetID=pet,
+            UserID=request.user,
+            content=content.strip()
+        )
+        comment.save()
+        
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({
+                'success': True,
+                'comment': {
+                    'id': comment.id,
+                    'content': comment.content,
+                    'username': request.user.username,
+                    'created_at': comment.created_at.strftime('%B %d, %Y'),
+                    'is_owner': True
+                }
+            })
+        
+        messages.success(request, 'Your comment has been posted!')
+        return redirect('pets:home')
+    
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+
+@login_required
+def get_comments(request, pet_id):
+    """
+    View for fetching all comments for a pet (AJAX only)
+    """
+    pet = get_object_or_404(Pet, id=pet_id)
+    comments = pet.comments.all() 
+    
+    user_commented = Comment.objects.filter(
+        PetID=pet, 
+        UserID=request.user
+    ).exists()
+    
+    comments_data = []
+    for comment in comments:
+        comments_data.append({
+            'id': comment.id,
+            'username': comment.UserID.username,
+            'content': comment.content,
+            'created_at': comment.created_at.strftime('%B %d, %Y'),
+            'is_owner': comment.UserID == request.user
+        })
+    
+    return JsonResponse({
+        'comments': comments_data,
+        'user_commented': user_commented,
+        'comments_count': len(comments_data)
+    })
+
+
+@login_required
+def delete_comment(request, comment_id):
+    """
+    View for deleting a user's own comment
+    """
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+    
+    comment = get_object_or_404(Comment, id=comment_id)
+    
+    if comment.UserID != request.user:
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'error': 'You can only delete your own comments'}, status=403)
+        messages.error(request, 'You can only delete your own comments.')
+        return redirect('pets:home')
+    
+    pet_id = comment.PetID.id
+    comment.delete()
+    
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({
+            'success': True,
+            'message': 'Comment deleted successfully',
+            'pet_id': pet_id
+        })
+    
+    messages.success(request, 'Your comment has been deleted.')
+    return redirect('pets:home')
+
+
+@login_required
+def edit_comment(request, comment_id):
+    """
+    View for editing a user's own comment
+    """
+    comment = get_object_or_404(Comment, id=comment_id)
+    
+    if comment.UserID != request.user:
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'error': 'You can only edit your own comments'}, status=403)
+        messages.error(request, 'You can only edit your own comments.')
+        return redirect('pets:home')
+    
+    if request.method == 'POST':
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            try:
+                data = json.loads(request.body)
+                new_content = data.get('content', '')
+            except:
+                new_content = request.POST.get('content', '')
+        else:
+            new_content = request.POST.get('content', '')
+        
+        if not new_content or len(new_content.strip()) == 0:
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'error': 'Comment cannot be empty'}, status=400)
+            messages.error(request, 'Comment cannot be empty.')
+            return redirect('pets:home')
+        
+        if len(new_content) > 500:
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'error': 'Comment is too long (max 500 characters)'}, status=400)
+            messages.error(request, 'Comment is too long (max 500 characters).')
+            return redirect('pets:home')
+        
+        comment.content = new_content.strip()
+        comment.save()
+        
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({
+                'success': True,
+                'comment': {
+                    'id': comment.id,
+                    'content': comment.content,
+                    'username': request.user.username,
+                    'created_at': comment.created_at.strftime('%B %d, %Y'),
+                    'updated_at': comment.updated_at.strftime('%B %d, %Y'),
+                    'is_owner': True
+                }
+            })
+        
+        messages.success(request, 'Your comment has been updated.')
+        return redirect('pets:home')
+    
+    return JsonResponse({
+        'id': comment.id,
+        'content': comment.content
+    })

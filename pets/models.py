@@ -70,3 +70,17 @@ class UserProfile(models.Model):
     def __str__(self):
         return self.user.username
 
+class Comment(models.Model):
+    PetID = models.ForeignKey(Pet, on_delete=models.CASCADE, related_name='comments')
+    UserID = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
+    content = models.TextField(max_length=200)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        unique_together = ['PetID', 'UserID']
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"Comment by {self.UserID.username} on {self.PetID.name}"
+
