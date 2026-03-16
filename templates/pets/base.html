@@ -8,6 +8,10 @@
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/starpets.css' %}">
+    <link rel="stylesheet" href="{% static 'css/comments.css' %}">
+    
+    
+    {% block extra_css %}{% endblock %}
 </head>
 <body class="vintage-bg d-flex flex-column min-vh-100">
 
@@ -69,6 +73,56 @@
         {% block content %}{% endblock %}
     </main>
 
+    
+    <div id="commentSidebar" class="comment-sidebar">
+        <div class="sidebar-header">
+            <h3>Comments</h3>
+            <button class="close-btn" onclick="closeCommentSidebar()">&times;</button>
+        </div>
+        <div class="sidebar-content">
+            <div id="commentsList" class="comments-list">
+                <p class="text-muted text-center">Loading comments...</p>
+            </div>
+            
+            <div id="commentFormContainer" class="comment-form-container" style="display: none;">
+                <form id="commentForm">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <textarea 
+                            id="commentContent" 
+                            class="form-control" 
+                            rows="3" 
+                            placeholder="Write your comment here..."
+                            maxlength="500"
+                            required
+                        ></textarea>
+                        <div class="form-text text-end">
+                            <span id="charCount">0</span>/500
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send me-1" viewBox="0 0 16 16">
+                            <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576 6.636 10.07Zm6.787-8.201L1.591 6.602l4.339 2.76 7.494-7.493Z"/>
+                        </svg>
+                        Post Comment
+                    </button>
+                </form>
+            </div>
+            
+            <div id="alreadyCommentedMsg" class="alert alert-info text-center" style="display: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle me-1" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                    <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+                </svg>
+                You have already commented on this pet.
+            </div>
+        </div>
+    </div>
+
+    
+    <div id="overlay" class="overlay" onclick="closeCommentSidebar()"></div>
+    
+
     <footer class="vintage-footer text-center py-4 mt-auto border-top">
         <p class="m-0 vintage-serif text-muted">© 2026 StarPets</p>
     </footer>
@@ -79,6 +133,10 @@
         const RATE_URL = "{% url 'pets:rate_pet' 0 %}".replace('0/', '');
     </script>
     <script src="{% static 'js/starpets.js' %}"></script>
+    <script src="{% static 'js/comments.js' %}"></script>
+    
+    
     {% block extra_js %}{% endblock %}
+    
 </body>
 </html>

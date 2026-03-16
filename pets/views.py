@@ -37,6 +37,13 @@ def top_pets(request):
     if not top_pets_list.exists():
         top_pets_list = Pet.objects.order_by('-average_rating')[:4]
     
+    # Add comment information for each pet
+    for pet in top_pets_list:
+        pet.user_commented = Comment.objects.filter(
+            PetID=pet, 
+            UserID=request.user
+        ).exists()
+    
     # Add the top pets to the context dictionary and render the top pets template
     context = {
         'top_pets' : top_pets_list
@@ -75,6 +82,7 @@ def bookmarks(request):
     # Fetch the pets that are bookmarked by the user
     bookmarked_pets = Pet.objects.filter(bookmark__UserID=request.user)
     
+    # Add comment information for each bookmarked pet
     for pet in bookmarked_pets:
         pet.user_commented = Comment.objects.filter(
             PetID=pet, 
@@ -223,15 +231,10 @@ def delete_pet(request, pet_id):
     return render(request, 'pets/confirm_delete.html', {'pet': pet})
 
 # comments
-
 @login_required
 def add_comment(request, pet_id):
-    """
-    View for adding a comment to a pet
-    """
     pet = get_object_or_404(Pet, id=pet_id)
     
-    # Check for existing comment
     if Comment.objects.filter(PetID=pet, UserID=request.user).exists():
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return JsonResponse({'error': 'You have already commented on this pet'}, status=400)
@@ -248,7 +251,6 @@ def add_comment(request, pet_id):
         else:
             content = request.POST.get('content', '')
         
-        # check if valid
         if not content or len(content.strip()) == 0:
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                 return JsonResponse({'error': 'Comment cannot be empty'}, status=400)
@@ -261,7 +263,6 @@ def add_comment(request, pet_id):
             messages.error(request, 'Comment is too long (max 200 characters).')
             return redirect('pets:home')
         
-        # create and save
         comment = Comment(
             PetID=pet,
             UserID=request.user,
@@ -286,12 +287,8 @@ def add_comment(request, pet_id):
     
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 
-
 @login_required
 def get_comments(request, pet_id):
-    """
-    View for fetching all comments for a pet (AJAX only)
-    """
     pet = get_object_or_404(Pet, id=pet_id)
     comments = pet.comments.all() 
     
@@ -316,12 +313,8 @@ def get_comments(request, pet_id):
         'comments_count': len(comments_data)
     })
 
-
 @login_required
 def delete_comment(request, comment_id):
-    """
-    View for deleting a user's own comment
-    """
     if request.method != 'POST':
         return JsonResponse({'error': 'Method not allowed'}, status=405)
     
@@ -346,12 +339,8 @@ def delete_comment(request, comment_id):
     messages.success(request, 'Your comment has been deleted.')
     return redirect('pets:home')
 
-
 @login_required
 def edit_comment(request, comment_id):
-    """
-    View for editing a user's own comment
-    """
     comment = get_object_or_404(Comment, id=comment_id)
     
     if comment.UserID != request.user:

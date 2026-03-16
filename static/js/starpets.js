@@ -126,11 +126,11 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // close menu if click outside it
-    window.addEventListener('click', (e) => {
-        if (dropDownMenu.classList.contains('show')){
-            dropDownMenu.classList.remove('show');
-        }
-    });
+    //window.addEventListener('click', (e) => {
+        //if (dropDownMenu.classList.contains('show')){
+         //   dropDownMenu.classList.remove('show');
+        //}
+    //});
 
     // --- CATEGORY FILTER LOGIC ---
     const filterItems = document.querySelectorAll('.category-filter-item');
