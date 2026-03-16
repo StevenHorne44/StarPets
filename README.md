@@ -33,7 +33,7 @@ python manage.py createsuperuser
 
 ### 5. Populate database 
 ```bash
-python populate_script.py
+python population_script.py
 ```
 
 ### 6. Launch the server 
