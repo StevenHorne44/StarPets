@@ -177,3 +177,19 @@ function getCookie(name) {
 
 
 
+// ----clickable card on home page ------
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Select all cards with the clickable class
+    const clickableCards = document.querySelectorAll('.clickable-card');
+
+    clickableCards.forEach(card => {
+        card.addEventListener('click', function() {
+            // Get the URL from the data-url attribute
+            const targetUrl = this.getAttribute('data-url');
+            if (targetUrl) {
+                window.location.href = targetUrl;
+            }
+        });
+    });
+});
