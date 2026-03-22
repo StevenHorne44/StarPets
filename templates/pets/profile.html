@@ -104,19 +104,51 @@
         function toggleBioEdit() {
             const bioBox = document.getElementById('bio-editor');
             const editBtn = event.target;
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            const placeholderText = "Click 'Edit Bio' to write your description!"
 
             if (bioBox.contentEditable === "false") {
+
+                //if initial text present, removes it for user to put their own
+                // , otherwise, users text stays
+                if (bioBox.innerText.trim() == placeholderText) {
+                    bioBox.innerText = "";
+                }
+
                 bioBox.contentEditable = "true";
-                bioBox.classList.add("bg-white", "border-amber");
+                bioBox.classList.add("bg-white", "border-warning");
                 bioBox.focus();
                 editBtn.innerText = "SAVE CHANGES";
                 editBtn.classList.replace("btn-outline-secondary", "btn-amber");
             } else {
-                const hiddenInput = document.getElementById("hidden-bio-textarea");
-                const hiddenForm = document.getElementById("hidden-bio-form");
+                const newBio = bioBox.innerText.trim();
 
-                hiddenInput.value = bioBox.innerText;
-                hiddenForm.submit();
+                fetch("{% url 'pets:edit_profile' %}", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": csrfToken,
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "X-Requested-with": "XMLHttpRequest"
+                    },
+                    body: new URLSearchParams({
+                        "description": newBio
+                    })
+                })
+                .then(response => {
+                    if (response.ok) {
+                        bioBox.contentEditable = "false";
+                        bioBox.classList.remove("bg-white", "border-warning");
+                        editBtn.innerText = "EDIT BIO";
+                        editBtn.classList.replace("btn-amber", "btn-outline-secondary");
+
+                        if (newBio === ""){
+                            bioBox.innerText = placeholderText;
+                        }
+                    } else {
+                        alert("Error saving bio.");
+                    }
+                });
             }
 
         }

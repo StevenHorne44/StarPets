@@ -145,8 +145,18 @@ def edit_profile(request):
         form = UserProfileForm(request.POST, request.FILES, instance=user_profile)
         if form.is_valid():
             form.save()
+
+            if request.headers.get("x-requested-with") == "XMLHttpRequest":
+                return JsonResponse({
+                    "status":"success",
+                    "message": "Profile updates successfully!",
+                    "description": user_profile.description
+                })
             return redirect('pets:profile')
     
+        if request.headers.get("x-requested-with") == "XMLHttpRequest":
+            return JsonResponse({"status": "error", "errors": form.errors}, status = 400)
+        
     return redirect('pets:profile')
 
 @login_required
