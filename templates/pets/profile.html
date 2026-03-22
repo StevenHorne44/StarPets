@@ -1,7 +1,7 @@
 {% extends 'pets/base.html' %}
 {% load static %}
 
-{% block title %}{{ user.username }}'s Profile{% endblock %}
+{% block title %}{{ viewed_user.username }}'s Profile{% endblock %}
 
 {% block content %}
 <div class="container py-4 mt-2">
@@ -11,15 +11,15 @@
             <div class="polaroid-card text-center p-4 shadow-sm h-100">
                 
                 <h2 class="vintage-heading fs-4 mb-4 pb-2 border-bottom text-dark">
-                    <span class="text-amber">★</span> {{ user.username }}
+                    <span class="text-amber">★</span> {{ viewed_user.username }}
                 </h2>
                 
                 <div class="mb-4 d-flex justify-content-center">
                     <div class="bg-light border border-2 rounded-circle d-flex align-items-center justify-content-center text-muted shadow-sm overflow-hidden" 
                         style="width: 130px; height: 130px;">
 
-                        {% if user.userprofile.profile_picture %}   
-                            <img src="{{ user.userprofile.profile_picture.url }}" 
+                        {% if user_profile.profile_picture %}   
+                            <img src="{{ user_profile.profile_picture.url }}" 
                                 alt="Profile Picture"
                                 class="w-100 h-100"
                                 style="object-fit: cover;">
@@ -31,6 +31,7 @@
                     </div>
                 </div>
 
+                {% if is_owner %}
                 <div class="d-grid gap-2 mb-4">
                     <form id="profile-pic-form" method="POST" action="{% url 'pets:edit_profile' %}" enctype="multipart/form-data">
                         {% csrf_token %}
@@ -48,6 +49,7 @@
                         Edit Bio
                     </button>
                 </div>
+                {% endif %}
 
                 <div class="text-start mt-2">
                     <h3 class="fs-6 text-uppercase fw-bold text-muted mb-2">Biography</h3>
@@ -56,7 +58,7 @@
                         class="p-3 bg-light border rounded shadow-sm small text-muted vintage-serif fst-italic text-break" 
                         style="min-height: 120px; line-height: 1.6; outline: none; word-wrap: break-word;" 
                         contenteditable="false">
-                        {{ user.userprofile.description|default:"Click 'Edit Bio' to write your description!" }}
+                        {{ user_profile.description|default:"Click 'Edit Bio' to write your description!" }}
                     </div>
 
                     <form id="hidden-bio-form" action="{% url 'pets:edit_profile' %}" method="POST" style="display: none;">
@@ -70,24 +72,25 @@
         <div class="col-12 col-md-8 col-lg-9">
             
             <div class="d-flex justify-content-between align-items-end mb-4 pb-3 border-bottom">
-                <h2 class="vintage-heading display-6 m-0 text-dark">{{ user.username }}'s Album</h2>
+                <h2 class="vintage-heading display-6 m-0 text-dark">{{ viewed_user.username }}'s Album</h2>
                 <div class="d-flex gap-2">
-                    <a href="{% url 'pets:upload' %}" class="btn btn-amber fw-bold shadow-sm">Upload New Pet</a>
+                    {% if is_owner %}
+                        <a href="{% url 'pets:upload' %}" class="btn btn-amber fw-bold shadow-sm">Upload New Pet</a>
 
-                    <form action="{% url 'pets:delete_account' %}" method="POST" class="d-inline">
-                        <button type="submit"
-                                class="btn btn-outline-danger fw-bold shadow-sm"
-                                onclick="return confirm('Are you sure? This will delete your profile and all uploaded StarPets');">
-                                Delete Account</button>
-                    </form>
-            
+                        <form action="{% url 'pets:delete_account' %}" method="POST" class="d-inline">
+                            <button type="submit"
+                                    class="btn btn-outline-danger fw-bold shadow-sm"
+                                    onclick="return confirm('Are you sure? This will delete your profile and all uploaded StarPets');">
+                                    Delete Account</button>
+                        </form>
+                    {% endif %}
                 </div>
             </div>
 
             <div class="row row-cols-1 row-cols-md-2 g-4">
-                {% for pet in user.pet_set.all %}
+                {% for pet in viewed_user.pet_set.all %}
                     <div class="col">
-                        {% include 'pets/partials/pet_box.html' with pet=pet show_delete=True %}
+                        {% include 'pets/partials/pet_box.html' with pet=pet show_delete=is_owner %}
                     </div>
                 {% empty %}
                     <div class="col-12 text-center py-5">

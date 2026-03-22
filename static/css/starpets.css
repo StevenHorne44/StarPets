@@ -171,3 +171,14 @@ body.vintage-bg {
     font-size: 0.9rem;
     margin-bottom: 0.5rem;
 }
+
+.owner-link {
+    transition: color 0.2s ease-in-out;
+    letter-spacing: 0.5px;
+    opacity: 0.8;
+}
+
+.owner-link:hover {
+    color: #f59e0b;
+    opacity: 1;
+}

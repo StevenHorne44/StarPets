@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 from django.contrib.auth import login as auth_login, logout
 from django.contrib import messages
 from django.http import JsonResponse
@@ -130,12 +131,31 @@ def upload_pets(request):
     return render(request, 'pets/upload.html', {'form':form})
 
 @login_required
-def profile(request):
-    # get all the pets where UserID == current user
-    user_pets = Pet.objects.filter(UserID=request.user) 
-    user_profile,created = UserProfile.objects.get_or_create(user=request.user)
+def profile(request, username=None):
+    #no username given, & user is logged in: display their own profile
+    #if username given, show that user's profile
 
-    return render(request, 'pets/profile.html', {'pets':user_pets, 'user_profile': user_profile})
+    if username is None:
+        if request.user.is_authenticated:
+            viewed_user = request.user
+        else:
+            return redirect('pets:login')
+    else:
+        viewed_user = get_object_or_404(User, username=username)
+
+    user_pets = Pet.objects.filter(UserID=viewed_user)
+    user_profile, created = UserProfile.objects.get_or_create(user=viewed_user)
+
+    is_owner = (request.user == viewed_user)
+
+    context = {
+        "viewed_user": viewed_user,
+        "user_profile": user_profile,
+        "pets": user_pets,
+        "is_owner": is_owner
+    } 
+
+    return render(request, 'pets/profile.html', context)
 
 @login_required
 def edit_profile(request):
@@ -156,7 +176,7 @@ def edit_profile(request):
     
         if request.headers.get("x-requested-with") == "XMLHttpRequest":
             return JsonResponse({"status": "error", "errors": form.errors}, status = 400)
-        
+            
     return redirect('pets:profile')
 
 @login_required

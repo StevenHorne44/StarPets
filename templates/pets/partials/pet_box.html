@@ -6,6 +6,13 @@
         <h2 class="text-center vintage-serif fs-4 fw-bold text-amber mb-3">★ #1 Pet of the Week ★</h2>
     {% endif %}
 
+    <div class="text-center mb-2">
+        <a href="{% url 'pets:view_user_profile' pet.UserID.username %}"
+            class="text-decoration-none small fw-bold text-muted vintage-serif owner-link">
+            @{{ pet.UserID.username }}
+        </a>
+    </div>
+
     {% if pet.picture %}
         <div class="pet-image-wrapper shadow-sm" style="background-image: url('{{ pet.picture.url }}');">
             <img src="{{ pet.picture.url }}" alt="{{ pet.name }}" class="pet-box-image">
