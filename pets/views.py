@@ -54,7 +54,7 @@ def top_pets(request):
 @login_required
 def categories(request):
     # Fetch all pet types for the filter
-    pet_types = PetType.objects.all()
+    pet_types = PetType.objects.all().order_by('type_name')
     selected_type = request.GET.get('type')
     
     # Apply a filter or return ALL pets if no filter is selected

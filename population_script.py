@@ -1,6 +1,6 @@
 import os
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'starpets_project.settings')
-
+import json
 import django
 django.setup()
 from django.contrib.auth.models import User 
@@ -26,9 +26,13 @@ def populate():
     for name,path in pet_dict.items():
         print(name,"",path)
 
-    dog_type = add_pet_type('Dog')
-    cat_type = add_pet_type('Cat')
-    bird_type = add_pet_type('Bird')
+    with open('pet_types.json') as f:
+        pet_types = json.load(f)
+
+    type_objects = {name: add_pet_type(name) for name in pet_types}
+    dog_type = type_objects.get('Dog')
+    cat_type = type_objects.get('Cat')
+    bird_type = type_objects.get('Bird')
 
     user1 = add_user("Steven", "steven@example.com","12345678f")
     user2 = add_user("Alexander", "alexander@example.com","123456789f")
