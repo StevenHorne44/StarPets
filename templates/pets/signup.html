@@ -3,16 +3,46 @@
 {% block title %}Sign Up{% endblock %}
 
 {% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
 
-    <div class = "signup-container">
-        <h1>Create your StarPet account</h1>
-        <form method="POST">
-            {% csrf_token %}
-            {{ form.media }} {{ form.as_p }}
-            <button type="submit" class="signup-submit-btn">Sign Up</button>
-        </form>
+        <div class="mb-4 text-center">
+            <h1 class="display-5 vintage-heading">Join the Spotlight</h1>
+            <p class="text-muted vintage-serif fs-5">Create your StarPets account and start your album.</p>
+        </div>
 
-        <p>Already have an account? <a href="{% url 'pets:login' %}">Login here</a></p>
+        <div class="bg-white border rounded shadow-sm p-4 p-md-5">
+            <form method="POST" class="vintage-form">
+                {% csrf_token %}
+
+                {{ form.media }}
+
+                {% if form.errors %}
+                    <div class="alert alert-danger mb-3 small">
+                        Please correct the errors below.
+                    </div>
+                {% endif %}
+
+                <div class="mb-3 signup-form-fields">
+                    {{ form.as_p }}
+                </div>
+
+                <hr class="my-4 border-light">
+
+                <button type="submit" class="btn btn-amber btn-lg fw-bold px-5 shadow-sm w-100">
+                    Create Account
+                </button>
+            </form>
+
+            <div class="mt-4 text-center">
+                <p class="mb-0 text-muted">Already have an account?
+                    <a href="{% url 'pets:login' %}" class="text-amber fw-bold text-decoration-none">Login here</a>
+                </p>
+            </div>
+        </div>
     </div>
+</div>
 
-    {% endblock %}
+
+
+{% endblock %}

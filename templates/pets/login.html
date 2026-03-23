@@ -4,32 +4,49 @@
 
 {% block content %}
 
-    <div class = "login-container">
-        <h1>Login to your StarPet account</h1>
+    <div class = "row justify-content-center">
+        <div class="col-md-8 cold-lg-5">
 
-        <form method="post">
-            {% csrf_token %}
+            <div class="mb-2 text-center">
+                <h1 class="display-5 vintage-heading">Welcome Back</h1>
+                <p class="text-muted vintage-serif fs-5">Login to your StarPets account</p>
+            </div>
 
-            {{ form.media }}
+            <div class="bg-white border rounded shadow-sm p-4 p-md-5">
+                <form method="POST" class="vintage-form">
+                    {% csrf_token %}
 
-            {% if form.non_field_errors %}
-                <div style="color: red; margin-bottom: 10px;">
-                    {{ form.non_field_errors }}
+                    {{ form.media }}
+
+                    {% if form.non_field_errors %}
+                        <div style="alert alert-danger mb-3 small">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
+
+                    {% if form.captcha.errors %}
+                        <div class="alert alert-danger mb-3 small">
+                            <strong>Captcha Error:</strong> {{ form.captcha.errors }}
+                        </div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                    {{ form.as_p }}
+                    </div>
+
+                    <hr class="my-4 border-light">
+
+                    <button type="submit" class="btn btn-amber btn-lg fw-bold px-5 shadow-sm w-100">
+                        Login
+                    </button>
+                </form>
+
+                <div class="mt-4 text-center">
+                    <p class="mb-0 text-muted">Don't have an account?
+                        <a href="{% url 'pets:signup' %}" class="text-amber fw-bold text-decoration">Create an account</a>
+                    </p>
                 </div>
-            {% endif %}
-
-            {% if form.captcha.errors %}
-                <div style="color: red; margin-bottom: 10px;">
-                    Captcha Error: {{ form.captcha.errors }}
-                </div>
-            {% endif %}
-
-            {{ form.as_p }}
-
-            <button type="submit" class="login-submit-btn">Login</button>
-        </form>
-
-        <p>Don't have an account? <a href="{% url 'pets:signup' %}">Create an account</a></p>
-    </div>
-
+                
+            </div>
+        </div>
 {%endblock %}
