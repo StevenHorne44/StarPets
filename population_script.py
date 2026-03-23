@@ -5,17 +5,22 @@ import django
 django.setup()
 from django.contrib.auth.models import User 
 from pets.models import PetType, Pet, PetRating
-import os
+import shutil
 
 def populate():
-    
+    #Make files for when someone first populates website
+    os.makedirs("media/PetPhotos", exist_ok=True) # Stores population_script pets
+    os.makedirs("media/UserPhotos", exist_ok=True) # Stores population_script user pfp
+    os.makedirs("media/pet_images", exist_ok=True) # Stores current users pets
+    os.makedirs("media/profile_pictures", exist_ok=True) # Stores current users pfp
+   
     PetRating.objects.all().delete()
     Pet.objects.all().delete()
     PetType.objects.all().delete()
     User.objects.exclude(is_superuser=True).delete()
 
     pet_dict = {}
-    photoFolder = "media/PetPhotos"
+    photoFolder = "population_pets"
 
     for filename in os.listdir(photoFolder):
         if filename.lower().endswith((".jpg",".png",".jpeg")):
@@ -23,6 +28,10 @@ def populate():
             db_path = f"PetPhotos/{filename}"
             pet_dict[file_key] = db_path
     
+    # Copy images from PetPhotos to media/PetPhotos
+    for filename in os.listdir("population_pets"):
+        shutil.copy(f"population_pets/{filename}", f"media/PetPhotos/{filename}")
+
     for name,path in pet_dict.items():
         print(name,"",path)
 
