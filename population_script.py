@@ -4,7 +4,7 @@ import json
 import django
 django.setup()
 from django.contrib.auth.models import User 
-from pets.models import PetType, Pet, PetRating
+from pets.models import PetType, Pet, PetRating, UserProfile
 import shutil
 
 def populate():
@@ -32,6 +32,9 @@ def populate():
     for filename in os.listdir("population_pets"):
         shutil.copy(f"population_pets/{filename}", f"media/PetPhotos/{filename}")
 
+    for filename in os.listdir("population_users"):
+        shutil.copy(f"population_users/{filename}", f"media/UserPhotos/{filename}")
+
     for name,path in pet_dict.items():
         print(name,"",path)
 
@@ -41,27 +44,38 @@ def populate():
     type_objects = {name: add_pet_type(name) for name in pet_types}
     dog_type = type_objects.get('Dog')
     cat_type = type_objects.get('Cat')
-    bird_type = type_objects.get('Bird')
+    fish_type = type_objects.get('Fish')
+    rabbit_type = type_objects.get('Rabbit')
+    snake_type = type_objects.get("Snake")
+    turtle_type = type_objects.get("Turtle")
+    parrot_type = type_objects.get("Parrot")
 
-    user1 = add_user("Steven", "steven@example.com","12345678f")
-    user2 = add_user("Alexander", "alexander@example.com","123456789f")
+    user1 = add_user("Steven", "steven@example.com", "12345678f", "Steven.jpg")
+    user2 = add_user("Alexander", "alexander@example.com", "123456789f", "Alexander.jpg")
+    user3 = add_user("Bob", "bob@example.com", "12345678f", "Bob.jpg")
+    user4 = add_user("Marjorie", "marjoire@example.com", "12345678f", "Marjorie.png")
 
-    pets = []
-    i = 0
-    for name,path in pet_dict.items():
-        if i % 2 == 0:
-            pets.append(add_pet(dog_type, user1, name, "PLACEHOLDER DESC", 5, path))
-        else:
-            pets.append(add_pet(dog_type,user2,name,"PLACEHOLDER DESC",5,path))
-        i+=1
+    # Manually defined pets with correct types
+    add_pet(dog_type,   user1, "Buddy",   "A happy german shepherd", 5, "PetPhotos/Buddy.jpg")
+    add_pet(cat_type,   user2, "Fluffy",  "A fluffy grey cat.",          4, "PetPhotos/Fluffy.jpg")
+    add_pet(fish_type,  user1, "Nemo",    "A bright orange clownfish.",   5, "PetPhotos/Nemo.jpg")
+    add_pet(rabbit_type,user3, "Bunny",   "A soft brown rabbit.",         4, "PetPhotos/Bunny.jpg")
+    add_pet(dog_type,   user2, "Gold",    "A friendly golden retriever.", 3, "PetPhotos/Gold.jpg")
+    add_pet(parrot_type,   user4, "Skittles","A colourful playful parrot.",       5, "PetPhotos/Skittles.jpg")
+    add_pet(snake_type,   user3, "Noodle",  "A long snake.",            4, "PetPhotos/Noodle.jpg")
+    add_pet(turtle_type,   user4, "Speedy",  "A slow cheerful turtle.",              5, "PetPhotos/Speedy.jpg")
+
 
     print("Database population complete.")
 
-def add_user(username, email, password):
+def add_user(username, email, password, photo_filename):
     user, created = User.objects.get_or_create(username=username, email=email)
     if created:
         user.set_password(password)
         user.save()
+        profile = UserProfile.objects.get_or_create(user=user)[0]
+        profile.profile_picture = f"UserPhotos/{photo_filename}"
+        profile.save()
     return user 
 
 def add_pet_type(name):
