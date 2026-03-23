@@ -50,10 +50,10 @@ def populate():
     turtle_type = type_objects.get("Turtle")
     parrot_type = type_objects.get("Parrot")
 
-    user1 = add_user("Steven", "steven@example.com", "12345678f", "Steven.jpg")
-    user2 = add_user("Alexander", "alexander@example.com", "123456789f", "Alexander.jpg")
-    user3 = add_user("Bob", "bob@example.com", "12345678f", "Bob.jpg")
-    user4 = add_user("Marjorie", "marjorie@example.com", "12345678f", "Marjorie.png")
+    user1 = add_user("Steven", "steven@example.com", "12345678f", "Steven.jpg", "Dog and fish owner")
+    user2 = add_user("Alexander", "alexander@example.com", "123456789f", "Alexander.jpg", "Big pet lover")
+    user3 = add_user("Bob", "bob@example.com", "12345678f", "Bob.jpg", "Pet admirer")
+    user4 = add_user("Marjorie", "marjorie@example.com", "12345678f", "Marjorie.png", "I love pets")
 
     # Manually defined pets with correct types
     buddy = add_pet(dog_type,   user1, "Buddy",   "A happy german shepherd", 5, "PetPhotos/Buddy.jpg")
@@ -80,13 +80,14 @@ def populate():
 
     print("Database population complete.")
 
-def add_user(username, email, password, photo_filename):
+def add_user(username, email, password, photo_filename, bio):
     user, created = User.objects.get_or_create(username=username, email=email)
     if created:
         user.set_password(password)
         user.save()
         profile = UserProfile.objects.get_or_create(user=user)[0]
         profile.profile_picture = f"UserPhotos/{photo_filename}"
+        profile.description = bio
         profile.save()
     return user 
 
