@@ -52,7 +52,7 @@ class PetModelTests(TestCase):
 
 
 # view tests
-# tests for top pets view 
+# tests for top pets view (& login required for all pages)
 class TopPetsViewTests(TestCase):
     
     def setUp(self):
@@ -99,6 +99,43 @@ class TopPetsViewTests(TestCase):
         pets = list(response.context['top_pets'])
         self.assertEqual(pets[0].name, 'High')
 
+#tests for bookmark view
+class BookmarkViewTests(TestCase):
+    
+    def setUp(self):
+        # create test user
+        self.user = User.objects.create_user(username='testuser', password='password123')
+        self.other_user = User.objects.create_user(username='other', password='password123')
+        # create test pets
+        self.pet_type = PetType.objects.create(type_name='Dog')
+        self.pet1 = Pet.objects.create(TypeID=self.pet_type, UserID=self.user, name='Pet1')
+        self.pet2 = Pet.objects.create(TypeID=self.pet_type, UserID=self.other_user, name='Pet2')
+
+    # add a bookmark
+    def test_add_bookmark(self):
+        self.client.login(username='testuser', password='password123')
+        response = self.client.post(reverse('pets:toggle_bookmark', args=[self.pet1.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(Bookmark.objects.filter(PetID=self.pet1, UserID=self.user).exists())
+        self.assertEqual(response.json()['is_bookmarked'], True)
+
+    # test only bookmarked pets are shown
+    def test_only_bookmarked_pets_displayed(self):
+        self.client.login(username='testuser', password='password123')
+        # bookmark only pet1, check only that one is displayed
+        Bookmark.objects.create(PetID=self.pet1, UserID=self.user)
+        response = self.client.get(reverse('pets:bookmarks'))
+        self.assertContains(response, 'Pet1')
+        self.assertNotContains(response, 'Pet2')
+    
+    # test bookmarks can be removed
+    def test_remove_bookmark(self):
+        self.client.login(username='testuser', password='password123')
+        Bookmark.objects.create(PetID=self.pet1, UserID=self.user)
+        response = self.client.post(reverse('pets:toggle_bookmark', args=[self.pet1.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(Bookmark.objects.filter(PetID=self.pet1, UserID=self.user).exists())
+        self.assertEqual(response.json()['is_bookmarked'], False)
     
 
     
