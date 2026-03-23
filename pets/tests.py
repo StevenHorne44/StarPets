@@ -1,8 +1,13 @@
 from urllib import response
 from django.contrib.auth.models import User
 from django.urls import reverse
+from PIL import Image
+from io import BytesIO
+
+from pets.forms import UploadForm
 from .models import Bookmark, Pet, PetRating, PetType
 from django.test import TestCase
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 # Create your tests here.
 
@@ -137,6 +142,74 @@ class BookmarkViewTests(TestCase):
         self.assertFalse(Bookmark.objects.filter(PetID=self.pet1, UserID=self.user).exists())
         self.assertEqual(response.json()['is_bookmarked'], False)
     
-
+# tests categories view
+class CategoriesViewTests(TestCase):
     
+    def setUp(self):
+        # create test user
+        self.user = User.objects.create_user(username='testuser', password='password123')
+        # create test pets
+        self.dog = PetType.objects.create(type_name='Dog')
+        self.cat = PetType.objects.create(type_name='Cat')
+        self.pet1 = Pet.objects.create(TypeID=self.dog, UserID=self.user, name='Pet1')
+        self.pet2 = Pet.objects.create(TypeID=self.cat, UserID=self.user, name='Pet2')
+    
+    # test that if no filter, all pets returned
+    def test_no_filter(self):
+        self.client.login(username='testuser', password='password123')
+        response = self.client.get(reverse('pets:categories'))
+        self.assertContains(response, 'Pet1')
+        self.assertContains(response, 'Pet2')
+        self.assertEqual(len(response.context['pets']), 2)
+
+    # test that animal filters work
+    def test_filter_by_type(self):
+        self.client.login(username='testuser', password='password123')
+        response = self.client.get(reverse('pets:categories') + '?type=Dog')
+        self.assertContains(response, 'Pet1')
+        self.assertNotContains(response, 'Pet2')
+
+# tests for upload page
+class UploadViewTests(TestCase):
+    def setUp(self):
+        # create test user
+        self.user = User.objects.create_user(username='testuser', password='password123')
+        self.client.login(username='testuser', password='password123')
+        self.pet_type = PetType.objects.create(type_name="Dog")
+        self.url = reverse('pets:upload')        
+    
+    # test a get request returns correct template
+    def test_upload_pets_get(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'pets/upload.html')
+        self.assertIn('form', response.context)
+
+    # # test file upload **not working**
+    # def test_upload_file(self):
+    #     # create an image for testing
+    #     image_io = BytesIO()
+    #     image = Image.new('RGB', (100, 100), color='red')
+    #     image.save(image_io, format='JPEG')
+    #     image_io.seek(0)
+    #     sample_file = SimpleUploadedFile(
+    #         "test_pet.jpg",
+    #         image_io.read(),
+    #         content_type="image/jpeg"
+    #     )
+    #     # sim file upload
+    #     data = {
+    #         'TypeID': self.pet_type.id,
+    #         'name': 'bob',
+    #         'description': 'cute'
+    #     }
+
+    #     files = {'picture': sample_file}
+    #     response = self.client.post(self.url, data=data, files=files)  
+    #     print("FORM FIELD NAMES:", response.context['form'].fields.keys())
+    #     # check it redirects to profile page
+    #     self.assertRedirects(response, reverse('pets:profile'))
+    #     # check pet object was created
+    #     pet = Pet.objects.get(name='bob')
+    #     self.assertEqual(pet.UserID, self.user)
         
