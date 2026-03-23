@@ -16,7 +16,7 @@ class HomePageTests(TestCase):
         response = self.client.get('/')
         self.assertContains(response, 'Welcome to StarPets!')
 
-# model testsS
+# model tests
 # Tests for pet model 
 class PetModelTests(TestCase):
     # Not a test
@@ -74,11 +74,32 @@ class TopPetsViewTests(TestCase):
         response = self.client.get(reverse('pets:upload'))
         self.assertEqual(response.status_code, 302)
 
-    # test that when no pets, page still loads
+    #test that logout works and blocks access
+    def test_logout_blocks_access(self):
+        self.client.login(username='testuser', password='password123')
+        self.client.logout()
+        response = self.client.get(reverse('pets:top_pets'))
+        self.assertEqual(response.status_code, 302)
+
+    #test that when no pets, page still loads
     def test_top_pets_empty(self):
         self.client.login(username='testuser', password='password123')
         response = self.client.get(reverse('pets:top_pets'))
         self.assertEqual(response.status_code, 200)
+
+    #test ordering of pets by rating
+    def test_top_pets_ordering(self):
+        self.client.login(username='testuser', password='password123')
+        dog = PetType.objects.create(type_name='Dog')
+        pet1 = Pet.objects.create(TypeID=dog, UserID=self.user, name='Low')
+        pet2 = Pet.objects.create(TypeID=dog, UserID=self.user, name='High')
+        PetRating.objects.create(PetID=pet1, UserID=self.user, stars=2)
+        PetRating.objects.create(PetID=pet2, UserID=self.user, stars=5)
+        response = self.client.get(reverse('pets:top_pets'))
+        pets = list(response.context['top_pets'])
+        self.assertEqual(pets[0].name, 'High')
+
+    
 
     
         
