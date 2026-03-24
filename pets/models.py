@@ -3,8 +3,6 @@ from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 from PIL import Image, ImageOps
 
-# Create your models here.
-
 class PetType(models.Model):
     type_name = models.CharField(max_length=128, unique=True)
     
