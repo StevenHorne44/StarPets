@@ -27,11 +27,12 @@ pip install -r requirements.txt
 ```
 
 ### 4. Enviornment Configuration (ReCAPTCHA)
-Create a file .env in project root directory(level with manage.py) Add the two keys from the submission document or you can make your own keys. Like this below.
+Create a file .env in project root directory(level with manage.py) Add the two keys from the submission document or you can make your own keys. Add these two lines to the .env file
 
+```text
 RECAPTCHA_PUBLIC_KEY=your_key_here
 RECAPTCHA_PRIVATE_KEY=your_key_here
-
+```
 
 
 ### 5. Database Initialization
