@@ -51,16 +51,21 @@ def populate():
     user2 = add_user("Alexander", "alexander@example.com", "123456789f", "Alexander.jpg", "Big pet lover")
     user3 = add_user("Bob", "bob@example.com", "12345678f", "Bob.jpg", "Pet admirer")
     user4 = add_user("Marjorie", "marjorie@example.com", "12345678f", "Marjorie.png", "I love pets")
+    user5 = add_user("Abigail", "abi@example.com", "12345678f", "abi.jpg" ,"Crazy Dog and Cat owner")
 
     # Manually defined pets with correct types
-    buddy = add_pet(type_objects['Dog'],   user1, "Buddy",   "A happy german shepherd", 5, "pet_images/Buddy.jpg")
+    buddy = add_pet(type_objects['Dog'],   user1, "Buddy",   "A happy german shepherd", 4, "pet_images/Buddy.jpg")
     fluffy = add_pet(type_objects['Cat'],   user2, "Fluffy",  "A fluffy grey cat.",          4, "pet_images/Fluffy.jpg")
-    nemo = add_pet(type_objects['Fish'],  user1, "Nemo",    "A bright orange clownfish.",   5, "pet_images/Nemo.jpg")
-    bunny = add_pet(type_objects['Rabbit'], user3, "Bunny",   "A soft brown rabbit.",         4, "pet_images/Bunny.jpg")
+    nemo = add_pet(type_objects['Fish'],  user1, "Nemo",    "A bright orange clownfish.",   3, "pet_images/Nemo.jpg")
+    bunny = add_pet(type_objects['Rabbit'], user3, "Bunny",   "A soft brown rabbit.",         2, "pet_images/Bunny.jpg")
     gold = add_pet(type_objects['Dog'],   user2, "Gold",    "A friendly golden retriever.", 3, "pet_images/Gold.jpg")
     skittles = add_pet(type_objects['Parrot'],   user4, "Skittles","A colourful playful parrot.",       5, "pet_images/Skittles.jpg")
     noodle = add_pet(type_objects['Snake'],   user3, "Noodle",  "A long snake.",            4, "pet_images/Noodle.jpg")
-    speedy = add_pet(type_objects['Turtle'],   user4, "Speedy",  "A slow cheerful turtle.",              5, "pet_images/Speedy.jpg")
+    speedy = add_pet(type_objects['Turtle'],   user4, "Speedy",  "A slow cheerful turtle.",              3, "pet_images/Speedy.jpg")
+    alfie = add_pet(type_objects['Cat'], user2, "Alfie", "A strange and sassy black cat.", 5, "pet_images/Alfie.jpg")
+    mack = add_pet(type_objects['Dog'],user4, "Mack", "An angry westie.", 5, "pet_images/Mack.jpg")
+    blue = add_pet(type_objects['Dog'], user5, "Blue", "A bitey dog", 3, "pet_images/Blue.png")
+    waffles = add_pet(type_objects['Cat'], user5, "Waffles", "A biscuit making kitty", 4, "pet_images/waffles.jpg")
 
 
     #Comments
@@ -75,6 +80,10 @@ def populate():
     add_comment(gold, user1, "I want one")
     add_comment(bunny, user4, "Adorable")
     add_comment(nemo, user3, "GOOD NAME!")
+    add_comment(blue, user2, "Sleepy!")
+    add_comment(mack, user1, "How regal!")
+    add_comment(waffles, user3, "Great biscuit making!")
+    add_comment(alfie, user5, "What a lovely cat!")
 
     post_delete.connect(receiver = update_pet_average_rating, sender=PetRating)
 
