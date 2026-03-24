@@ -183,8 +183,8 @@ def edit_profile(request):
 def delete_account(request):
     if request.method == 'POST':
         user = request.user
-        logout(request)
         user.delete()
+        logout(request)
         messages.success(request, "Your account has been successfully deleted.")
         return redirect('pets:home')
     
@@ -256,7 +256,7 @@ def delete_pet(request, pet_id):
     if request.method == "POST":
         pet.delete()
         messages.success(request, "Your upload has been successfully deleted.")
-        return redirect('pets:home')
+        return redirect('pets:profile')
     
     return render(request, 'pets/confirm_delete.html', {'pet': pet})
 

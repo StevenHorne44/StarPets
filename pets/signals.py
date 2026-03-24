@@ -1,7 +1,7 @@
 from django.db.models import Avg
 from django.db.models.signals import post_save, post_delete, pre_save
 from django.dispatch import receiver
-from .models import PetRating, UserProfile
+from .models import PetRating, UserProfile, Pet
 import os
 
 # --- Pet Rating Signals ---
@@ -24,11 +24,11 @@ def update_pet_average_rating(sender, instance, **kwargs):
     pet.save()
     
     
-# --- User Profile File Cleanup Signals ---
+# --- PROFILE PIC DELETE LOGIC ---
 
 #delete old file when a new one is uploaded
 @receiver(pre_save, sender=UserProfile)
-def auto_delete_file_on_change(sender, instance, **kwargs):
+def auto_delete_pfp_on_change(sender, instance, **kwargs):
     if not instance.pk:
         return False
     
@@ -46,7 +46,24 @@ def auto_delete_file_on_change(sender, instance, **kwargs):
             
 #delete file when UserProfile delete (user deletes account)
 @receiver(post_delete, sender=UserProfile)
-def auto_delete_file_on_delete(sender, instance, **kwargs):
+def auto_delete_pfp_on_account_delete(sender, instance, **kwargs):
     if instance.profile_picture:
         if os.path.isfile(instance.profile_picture.path):
             os.remove(instance.profile_picture.path)
+
+
+#------ PET IMAGE DELETE LOGIC -------
+
+@receiver(post_delete, sender=Pet)
+def auto_delete_pet_file_on_delete(sender, instance, **kwargs):
+    #Deletes pet image file if:
+    #1. User deletes a single pet
+    #2. User deltes their account (all their pet images get delted)
+
+    if instance.picture:
+        try:
+            if os.path.isfile(instance.picture.path):
+                os.remove(instance.picture.path)
+        except (ValueError, FileNotFoundError):
+            pass
+        

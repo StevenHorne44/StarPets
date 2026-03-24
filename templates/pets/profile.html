@@ -78,6 +78,7 @@
                         <a href="{% url 'pets:upload' %}" class="btn btn-amber fw-bold shadow-sm">Upload New Pet</a>
 
                         <form action="{% url 'pets:delete_account' %}" method="POST" class="d-inline">
+                            {% csrf_token %}
                             <button type="submit"
                                     class="btn btn-outline-danger fw-bold shadow-sm"
                                     onclick="return confirm('Are you sure? This will delete your profile and all uploaded StarPets');">
