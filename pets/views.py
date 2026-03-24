@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from .forms import ExtendedUserCreationForm, UploadForm, UserProfileForm, CustomAuthenticationForm
+from .forms import ExtendedUserCreationForm, UploadForm, UserProfileForm, CustomAuthenticationForm, CommentForm
 from .models import Bookmark, Pet, PetType, PetRating, UserProfile, Comment
 import datetime
 import json
@@ -47,7 +47,8 @@ def top_pets(request):
     
     # Add the top pets to the context dictionary and render the top pets template
     context = {
-        'top_pets' : top_pets_list
+        'top_pets' : top_pets_list,
+        'comment_form': CommentForm(),
     }
     return render(request, 'pets/top_pets.html', context)
 
@@ -74,7 +75,8 @@ def categories(request):
     context = {
         'pets': pets,
         'pet_types': pet_types,
-        'selected_type': selected_type
+        'selected_type': selected_type,
+        'comment_form': CommentForm(),
     }
     return render(request, 'pets/categories.html', context)
 
@@ -92,7 +94,8 @@ def bookmarks(request):
     
     # Add the bookmarked pets to the context dictionary and render the bookmarks template
     context = {
-        'pets': bookmarked_pets
+        'pets': bookmarked_pets,
+        'comment_form': CommentForm()
     }
     return render(request, 'pets/bookmarks.html', context)
 
@@ -266,10 +269,7 @@ def add_comment(request, pet_id):
     pet = get_object_or_404(Pet, id=pet_id)
     
     if Comment.objects.filter(PetID=pet, UserID=request.user).exists():
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            return JsonResponse({'error': 'You have already commented on this pet'}, status=400)
-        messages.error(request, 'You have already commented on this pet.')
-        return redirect('pets:home')
+        return JsonResponse({'error': 'You have already commented on this pet. Please edit your existing one.'}, status=400)
     
     if request.method == 'POST':
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -322,10 +322,8 @@ def get_comments(request, pet_id):
     pet = get_object_or_404(Pet, id=pet_id)
     comments = pet.comments.all() 
     
-    user_commented = Comment.objects.filter(
-        PetID=pet, 
-        UserID=request.user
-    ).exists()
+    user_comment = comments.filter(UserID=request.user).first()
+    user_commented = user_comment is not None
     
     comments_data = []
     for comment in comments:
@@ -340,6 +338,8 @@ def get_comments(request, pet_id):
     return JsonResponse({
         'comments': comments_data,
         'user_commented': user_commented,
+        'user_text' : user_comment.content if user_comment else "",
+        'user_comment_id': user_comment.id if user_comment else None,
         'comments_count': len(comments_data)
     })
 
@@ -395,10 +395,10 @@ def edit_comment(request, comment_id):
             messages.error(request, 'Comment cannot be empty.')
             return redirect('pets:home')
         
-        if len(new_content) > 500:
+        if len(new_content) > 200:
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                return JsonResponse({'error': 'Comment is too long (max 500 characters)'}, status=400)
-            messages.error(request, 'Comment is too long (max 500 characters).')
+                return JsonResponse({'error': 'Comment is too long (max 200 characters)'}, status=400)
+            messages.error(request, 'Comment is too long (max 200 characters).')
             return redirect('pets:home')
         
         comment.content = new_content.strip()

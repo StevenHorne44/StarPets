@@ -1,4 +1,5 @@
 {% extends 'pets/base.html' %}
+{% load static %}
 
 {% block content %}
     <div class="mb-5 border-bottom pb-4 text-center">
@@ -22,4 +23,11 @@
             {% endif %}
         {% endblock %}
     </div>
+
+    {% include 'pets/partials/comments.html' %}
+
+    <script src="{% static 'js/comments.js' %}"></script>
+
+    {% block extra_js %}{% endblock %}
+
 {% endblock %}
