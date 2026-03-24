@@ -17,6 +17,7 @@ cd StarPets
 
 ```bash
 conda create -n starpets_env python=3.11 -y
+conda activate starpets_env
 ```
  
 ### 3. Install Dependencies
@@ -25,18 +26,26 @@ conda create -n starpets_env python=3.11 -y
 pip install -r requirements.txt
 ```
 
-### 4. Database Initialization
+### 4. Enviornment Configuration (ReCAPTCHA)
+Create a file .env in project root directory(level with manage.py) Add the two keys from the submission document or you can make your own keys. Like this below.
+
+RECAPTCHA_PUBLIC_KEY=your_key_here
+RECAPTCHA_PRIVATE_KEY=your_key_here
+
+
+
+### 5. Database Initialization
 ```bash
 python manage.py migrate 
 python manage.py createsuperuser
 ```
 
-### 5. Populate database 
+### 6. Populate database 
 ```bash
 python population_script.py
 ```
 
-### 6. Launch the server 
+### 7. Launch the server 
 ```bash
 python manage.py runserver
 ```
