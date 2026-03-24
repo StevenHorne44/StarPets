@@ -5,7 +5,7 @@ from PIL import Image
 from io import BytesIO
 
 from pets.forms import UploadForm
-from .models import Bookmark, Pet, PetRating, PetType
+from .models import Bookmark, Pet, PetRating, PetType, Comment
 from django.test import TestCase
 from django.core.files.uploadedfile import SimpleUploadedFile
 
@@ -185,31 +185,149 @@ class UploadViewTests(TestCase):
         self.assertTemplateUsed(response, 'pets/upload.html')
         self.assertIn('form', response.context)
 
-    # # test file upload **not working**
-    # def test_upload_file(self):
-    #     # create an image for testing
-    #     image_io = BytesIO()
-    #     image = Image.new('RGB', (100, 100), color='red')
-    #     image.save(image_io, format='JPEG')
-    #     image_io.seek(0)
-    #     sample_file = SimpleUploadedFile(
-    #         "test_pet.jpg",
-    #         image_io.read(),
-    #         content_type="image/jpeg"
-    #     )
-    #     # sim file upload
-    #     data = {
-    #         'TypeID': self.pet_type.id,
-    #         'name': 'bob',
-    #         'description': 'cute'
-    #     }
+        # helper to generate test image
+    def generate_photo_file(self):
+        file = BytesIO()
+        image = Image.new('RGB', (100, 100), 'white')
+        image.save(file, 'jpeg')
+        file.name = 'test.jpg'
+        file.seek(0)
+        return file
 
-    #     files = {'picture': sample_file}
-    #     response = self.client.post(self.url, data=data, files=files)  
-    #     print("FORM FIELD NAMES:", response.context['form'].fields.keys())
-    #     # check it redirects to profile page
-    #     self.assertRedirects(response, reverse('pets:profile'))
-    #     # check pet object was created
-    #     pet = Pet.objects.get(name='bob')
-    #     self.assertEqual(pet.UserID, self.user)
-        
+    # test valid upload
+    def test_upload_file_success(self):
+        image = self.generate_photo_file()
+        form_data = {
+            'TypeID': self.pet_type.id,
+            'name': 'TestPet',
+            'description': 'cute pet'
+        }
+        file_data = {
+            'picture': image
+        }
+        response = self.client.post(self.url, data={**form_data, **file_data}, follow=True)
+        # ckeck redirect to profile
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(Pet.objects.filter(name='TestPet').exists())
+
+    # test that uploaded pet is assigned to logged-in user
+    def test_uploaded_pet_belongs_to_user(self):
+        image = self.generate_photo_file()
+
+        response = self.client.post(self.url, data={
+            'TypeID': self.pet_type.id,
+            'name': 'OwnedPet',
+            'description': 'Owned by user',
+            'picture': image
+        })
+
+        pet = Pet.objects.get(name='OwnedPet')
+        self.assertEqual(pet.UserID, self.user)
+
+# test rating view
+class RatingViewTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='password123')
+        self.client.login(username='testuser', password='password123')
+        self.pet_type = PetType.objects.create(type_name='Dog')
+        self.pet = Pet.objects.create(TypeID=self.pet_type, UserID=self.user, name='TestPet')
+
+    # successful rating
+    def test_rate_pet_success(self):
+        response = self.client.post(
+            reverse('pets:rate_pet', args=[self.pet.id]),
+            data='{"rating": 5}',
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(PetRating.objects.filter(PetID=self.pet, UserID=self.user).exists())
+        data = response.json()
+        self.assertTrue(data['success'])
+        self.assertEqual(data['new_average'], 5.0)
+
+    # update existing rating
+    def test_update_rating(self):
+        PetRating.objects.create(PetID=self.pet, UserID=self.user, stars=2)
+        response = self.client.post(
+            reverse('pets:rate_pet', args=[self.pet.id]),
+            data='{"rating": 4}',
+            content_type='application/json'
+        )
+        rating = PetRating.objects.get(PetID=self.pet, UserID=self.user)
+        self.assertEqual(rating.stars, 4)
+
+    # invalid rating - out of range
+    def test_invalid_rating(self):
+        response = self.client.post(
+            reverse('pets:rate_pet', args=[self.pet.id]),
+            data='{"rating": 10}',
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 400)
+
+    # login rquired to rate
+    def test_rate_requires_login(self):
+        self.client.logout()
+        response = self.client.post(
+            reverse('pets:rate_pet', args=[self.pet.id]),
+            data='{"rating": 5}',
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 302)
+
+# test comments view
+class CommentViewTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='password123')
+        self.other_user = User.objects.create_user(username='other', password='password123')
+        self.client.login(username='testuser', password='password123')
+        self.pet_type = PetType.objects.create(type_name='Dog')
+        self.pet = Pet.objects.create(TypeID=self.pet_type, UserID=self.user, name='TestPet')
+
+    # add comment 
+    def test_add_comment(self):
+        response = self.client.post(
+            reverse('pets:add_comment', args=[self.pet.id]),
+            data={'content': 'Nice pet!'}
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(Comment.objects.filter(PetID=self.pet, UserID=self.user).exists())
+
+    # empty comment
+    def test_add_comment_empty(self):
+        response = self.client.post(
+            reverse('pets:add_comment', args=[self.pet.id]),
+            data={'content': ''}
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(Comment.objects.filter(PetID=self.pet).exists())
+
+    # comment too long (>200)
+    def test_comment_long(self):
+        long_text = 'a' * 201
+        response = self.client.post(
+            reverse('pets:add_comment', args=[self.pet.id]),
+            data={'content': long_text}
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(Comment.objects.filter(PetID=self.pet).exists())
+
+    # login required
+    def test_comment_requires_login(self):
+        self.client.logout()
+        response = self.client.post(
+            reverse('pets:add_comment', args=[self.pet.id]),
+            data={'content': 'Test'}
+        )
+        self.assertEqual(response.status_code, 302)
+
+    # get comments 
+    def test_get_comments(self):
+        Comment.objects.create(PetID=self.pet, UserID=self.user, content='Hello')
+        response = self.client.get(reverse('pets:get_comments', args=[self.pet.id]))
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data['comments_count'], 1)
+        self.assertEqual(data['comments'][0]['content'], 'Hello')
+
+    
