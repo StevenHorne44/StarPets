@@ -51,7 +51,7 @@ def populate():
     user2 = add_user("Alexander", "alexander@example.com", "123456789f", "Alexander.jpg", "Big pet lover")
     user3 = add_user("Bob", "bob@example.com", "12345678f", "Bob.jpg", "Pet admirer")
     user4 = add_user("Marjorie", "marjorie@example.com", "12345678f", "Marjorie.png", "I love pets")
-    user5 = add_user("Abigail", "abi@example.com", "12345678f", "abi.jpg" ,"Crazy Dog and Cat owner")
+    user5 = add_user("Abigail", "abi@example.com", "12345678f", "abi.jpg" ,"EH BELLO")
 
     # Manually defined pets with correct types
     buddy = add_pet(type_objects['Dog'],   user1, "Buddy",   "A happy german shepherd", 4, "pet_images/Buddy.jpg")
@@ -64,7 +64,7 @@ def populate():
     speedy = add_pet(type_objects['Turtle'],   user4, "Speedy",  "A slow cheerful turtle.",              3, "pet_images/Speedy.jpg")
     alfie = add_pet(type_objects['Cat'], user2, "Alfie", "A strange and sassy black cat.", 5, "pet_images/Alfie.jpg")
     mack = add_pet(type_objects['Dog'],user4, "Mack", "An angry westie.", 5, "pet_images/Mack.jpg")
-    blue = add_pet(type_objects['Dog'], user5, "Blue", "A bitey dog", 3, "pet_images/Blue.png")
+    blue = add_pet(type_objects['Dog'], user5, "Blue", "Hes not actually blue", 3, "pet_images/Blue.png")
     waffles = add_pet(type_objects['Cat'], user5, "Waffles", "A biscuit making kitty", 4, "pet_images/waffles.jpg")
 
 
