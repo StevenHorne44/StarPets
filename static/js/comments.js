@@ -1,23 +1,31 @@
-window.currentPetId = null;
+console.log("JS is connected");
 
+window.currentPetId = null;
+window.currentUserCommentId = null;
+window.currentUserCommentText = "";
+
+// ------ SIDEBAR CONTROL FUNCTIONS ------
 window.openCommentSidebar = function(petId) {
-    console.log('Opening sidebar for pet:', petId);
     window.currentPetId = petId;
-    
+
     const sidebar = document.getElementById('commentSidebar');
     const overlay = document.getElementById('overlay');
-    
-    if (!sidebar || !overlay) {
-        console.error('Sidebar or overlay not found');
-        return;
+    const form = document.getElementById('commentForm');
+    if (form) {
+        form.dataset.mode = "add";
+        form.dataset.editId = "";
+        const submitBtn = document.getElementById('submitBtn');
+        if (submitBtn) submitBtn.textContent = "Post Comment";
+        const textarea = document.querySelector('.comment-textarea');
+        if (textarea) textarea.value = "";
     }
-    
-    sidebar.classList.add('open');
-    sidebar.style.right = '0';
-    overlay.classList.add('show');
-    overlay.style.display = 'block';
-    
-    window.loadComments(petId);
+
+    if (sidebar && overlay) {
+        sidebar.classList.add('open');
+        sidebar.style.right = '0';
+        overlay.style.display = 'block';
+        window.loadComments(petId);
+    } 
 };
 
 window.closeCommentSidebar = function() {
@@ -34,44 +42,30 @@ window.closeCommentSidebar = function() {
         overlay.classList.remove('show');
         overlay.style.display = 'none';
     }
-    
-    window.currentPetId = null;
 };
 
-window.loadComments = function(petId) {
-    console.log('Loading comments for pet:', petId);
-    
+//-------------- DATA FETCHING & DISPLAY ----------
+window.loadComments = function(petId) {    
     fetch(`/get-comments/${petId}/`)
         .then(response => response.json())
         .then(data => {
             window.displayComments(data.comments);
-            
-            const countSpan = document.querySelector(`.comment-count-${petId}`);
-            if (countSpan) {
-                countSpan.textContent = data.comments_count;
-            }
-            
+            window.currentUserCommentText = data.user_text || "";
+            window.currentUserCommentId = data.user_comment_id;
+
             const formContainer = document.getElementById('commentFormContainer');
             const alreadyMsg = document.getElementById('alreadyCommentedMsg');
             
-            if (formContainer && alreadyMsg) {
-                if (data.user_commented) {
-                    formContainer.style.display = 'none';
-                    alreadyMsg.style.display = 'block';
-                } else {
-                    formContainer.style.display = 'block';
-                    alreadyMsg.style.display = 'none';
-                }
+            if (data.user_commented) {
+                formContainer.style.display = 'none';
+                alreadyMsg.style.display = 'block';
+            } else {
+                formContainer.style.display = 'block';
+                alreadyMsg.style.display = 'none';
             }
         })
-        .catch(error => {
-            console.error('Error loading comments:', error);
-            const commentsList = document.getElementById('commentsList');
-            if (commentsList) {
-                commentsList.innerHTML = '<p class="text-danger">Error loading comments</p>';
-            }
-        });
-};
+        .catch(err => console.error("Error loading comments:", err));
+    };
 
 window.displayComments = function(comments) {
     const commentsList = document.getElementById('commentsList');
@@ -82,73 +76,133 @@ window.displayComments = function(comments) {
         commentsList.innerHTML = '<p class="no-comments">No comments yet. Be the first to comment!</p>';
         return;
     }
-    
-    let html = '';
-    comments.forEach(comment => {
-        html += `
-            <div class="comment">
-                <div class="comment-header">
-                    <span class="comment-author">${comment.username}</span>
-                    <span class="comment-date">${comment.created_at}</span>
-                </div>
-                <div class="comment-content">${comment.content}</div>
-            </div>
-        `;
-    });
-    
-    commentsList.innerHTML = html;
+    commentsList.innerHTML = comments.map(c => `
+        <div class="comment mb-3 p-2 border-bottom">
+            <small class="fw-bold">${c.username}</small>
+            <small class="text-muted float-end">${c.created_at}</small>
+            <p class="mb-0">${c.content}</p>
+        </div>
+    `).join('');
 };
 
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Comments.js DOMContentLoaded');
+
+// -------- ACTION FUNCTIONS (EDIT,DELETE,CANCEL) ------------
+
+window.enableCommentEdit = function() {
+    console.log("Edit Mode Activated");
+
+    const form = document.getElementById('commentForm');
+    const textarea = document.querySelector('.comment-textarea') || document.getElementById('id_content');
+    const submitBtn = document.getElementById('submitBtn');
     
+    if (!textarea) {
+        console.error("Could not find the textarea.");
+        return;
+    }
+
+    document.getElementById('alreadyCommentedMsg').style.display = 'none';
+    document.getElementById('commentFormContainer').style.display = 'block';
+    document.getElementById('cancelEditBtn').style.display = 'block';
+
+    textarea.value = window.currentUserCommentText;
+    form.dataset.mode = "edit";
+    form.dataset.editId = window.currentUserCommentId;
+    if (submitBtn) submitBtn.textContent = "Update Comment";
+    textarea.focus();
+};
+
+window.cancelEdit = function() {    
     const commentForm = document.getElementById('commentForm');
+    commentForm.dataset.mode = "add";
+    document.getElementById('commentFormContainer').style.display = 'none';
+    document.getElementById('alreadyCommentedMsg').style.display = 'block';
+}
+
+window.deleteComment = function() {
+    console.log("Delete attempt for ID:" , window.currentUserCommentId);
+
+    if(!window.currentUserCommentId) {
+        alert("Could not find comment ID to delete.");
+        return;
+    }
+
+    if (confirm("Are you sure you want to delete your comment?")) {
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        fetch(`/delete-comment/${window.currentUserCommentId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrftoken,
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.loadComments(window.currentPetId);
+            } else {
+                alert(data.error || "Something went wrong.");
+            }
+        })
+        .catch(error => console.error("Error:" , error));
+    }
+};
+
+
+
+//------- DOM READY EVENT LISTENERS ------------
+document.addEventListener('DOMContentLoaded', function() {    
+    const commentForm = document.getElementById('commentForm');
+
     if (commentForm) {
         commentForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            
-            const petId = window.currentPetId;
-            if (!petId) {
-                console.error('No pet selected');
-                return;
-            }
-            
-            const content = document.getElementById('commentContent').value;
-            if (!content.trim()) {
-                alert('Please enter a comment');
-                return;
-            }
-            
+                        
+            const editId = commentForm.dataset.editId;
+            const mode = commentForm.dataset.mode;
+            const url = (mode === "edit") ? `/edit-comment/${editId}/` : `/comment/${window.currentPetId}/`;
+
+            const textarea = document.querySelector('.comment-textarea');
+            if (!textarea) return;
+
+            const content = textarea.value;
+
             const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
             
-            fetch(`/comment/${petId}/`, {
+            fetch(url, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Content-Type': 'application/json',
                     'X-CSRFToken': csrftoken,
                     'X-Requested-With': 'XMLHttpRequest'
                 },
-                body: `content=${encodeURIComponent(content)}`
+                body: JSON.stringify({content: content})
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw err; });
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
-                    document.getElementById('commentContent').value = '';
-                    const charCount = document.getElementById('charCount');
-                    if (charCount) charCount.textContent = '0';
-                    window.loadComments(petId);
-                } else if (data.error) {
-                    alert(data.error);
+                    textarea.value = '';
+                    commentForm.dataset.mode = "add";
+                    document.getElementById('submitBtn').textContent = "Post Comment";
+                    const cancelBtn = document.getElementById('cancelEditBtn');
+                    if (cancelBtn) cancelBtn.style.display = 'none';
+
+                    window.loadComments(window.currentPetId);
                 }
             })
-            .catch(error => {
-                console.error('Error posting comment:', error);
-                alert('An error occurred while posting your comment.');
+            .catch(err => {
+                console.error("Submit error:", err);
+                alert(err.error || "Unexpected error occured.");
             });
         });
     }
-    
-    const commentTextarea = document.getElementById('commentContent');
+
+    const commentTextarea = document.querySelector('.comment-textarea');
     if (commentTextarea) {
         commentTextarea.addEventListener('input', function() {
             const charCount = document.getElementById('charCount');
@@ -183,5 +237,3 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
-
-console.log('Comments.js fully loaded');
