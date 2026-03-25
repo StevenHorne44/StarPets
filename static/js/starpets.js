@@ -193,3 +193,52 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+function toggleBioEdit(buttonElement, profileEditUrl) {
+    const bioBox = document.getElementById('bio-editor');
+    const editBtn = buttonElement
+    const csrfToken = getCookie('csrftoken');
+    const placeholderText = "Click 'Edit Bio' to write your description!"
+
+    if (bioBox.contentEditable === "false") {
+        //if initial text present, removes it for user to put their own
+        // , otherwise, users text stays
+        if (bioBox.innerText.trim() == placeholderText) {
+            bioBox.innerText = "";
+        }
+
+        bioBox.contentEditable = "true";
+        bioBox.classList.add("bg-white", "border-warning");
+        bioBox.focus();
+        editBtn.innerText = "SAVE CHANGES";
+        editBtn.classList.replace("btn-outline-secondary", "btn-amber");
+    } else {
+        //save mode
+        const newBio = bioBox.innerText.trim();
+
+        fetch(profileEditUrl, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": csrfToken,
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-Requested-with": "XMLHttpRequest"
+            },
+            body: new URLSearchParams({"description": newBio})
+        })
+        .then(response => {
+            if (response.ok) {
+                bioBox.contentEditable = "false";
+                bioBox.classList.remove("bg-white", "border-warning");
+                editBtn.innerText = "EDIT BIO";
+                editBtn.classList.replace("btn-amber", "btn-outline-secondary");
+
+                if (newBio === ""){
+                    bioBox.innerText = placeholderText;
+                }
+            } else {
+                alert("Error saving bio.");
+                        }
+        })
+        .catch(error => console.error('Bio Update Error:', error));
+    }
+}
