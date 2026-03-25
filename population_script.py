@@ -67,7 +67,7 @@ def populate():
     alfie = add_pet(type_objects['Cat'], user2, "Alfie", "A strange and sassy black cat.", 5, "pet_images/Alfie.jpg")
     mack = add_pet(type_objects['Dog'],user4, "Mack", "An angry westie.", 5, "pet_images/Mack.jpg")
     blue = add_pet(type_objects['Dog'], user5, "Blue", "Hes not actually blue", 3, "pet_images/Blue.png")
-    waffles = add_pet(type_objects['Cat'], user5, "Waffles", "A biscuit making kitty", 4, "pet_images/waffles.jpg")
+    waffles = add_pet(type_objects['Cat'], user5, "Waffles", "A biscuit making kitty", 4, "pet_images/Waffles.jpg")
 
 
     #Comments
