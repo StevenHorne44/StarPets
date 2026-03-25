@@ -1,5 +1,5 @@
 from django import forms
-from .models import Pet, PetType, UserProfile, Comment
+from .models import Pet, PetType, UserProfile, PetRating
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django_recaptcha.fields import ReCaptchaField
 from django_recaptcha.widgets import ReCaptchaV3
@@ -43,15 +43,14 @@ class UserProfileForm(forms.ModelForm):
 
 class CommentForm(forms.ModelForm):
     class Meta:
-        model = Comment
-        fields = ['content']
+        model = PetRating
+        fields = ['stars', 'comment']
         widgets = {
-            'content': forms.Textarea(attrs={
-                'class': 'comment-textarea',
-                'placeholder': 'Write your comment here:',
-                'rows': 4
-            })
-        }
-        labels = {
-            'content': ''
+            'comment': forms.Textarea(attrs={
+                'id': 'commentContent',
+                'class': 'form-control',
+                'rows':3,
+                'placeholder': 'Share your thoughts!',
+                'maxlength': '200'
+            }),
         }

@@ -1,6 +1,6 @@
 {% load static %}
 
-<div id="commentSidebar" class="comment-sidebar">
+<div id="commentSidebar" class="commentSidebar">
     <div class="sidebar-header">
         <h3>Comments</h3>
         <button class="close-btn" onclick="closeCommentSidebar()">&times;</button>
@@ -13,10 +13,11 @@
         
         
         <div id="commentFormContainer" class="comment-form-container" style="display: none;">
-            <form id="commentForm" data-mode="add" data-edit-id="">
+            <form id="commentForm">
                 {% csrf_token %}
                 <div class="mb-3">
-                    {{ comment_form.content }} <div class="form-text text-end">
+                    {{ comment_form.comment }} 
+                    <div class="form-text text-end">
                         <span id="charCount">0</span>/200
                     </div>
                 </div>

@@ -8,7 +8,7 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from .forms import ExtendedUserCreationForm, UploadForm, UserProfileForm, CustomAuthenticationForm, CommentForm
-from .models import Bookmark, Pet, PetType, PetRating, UserProfile, Comment
+from .models import Bookmark, Pet, PetType, PetRating, UserProfile
 import datetime
 import json
 
@@ -16,7 +16,7 @@ def home(request):
     pets = Pet.objects.all()
     if request.user.is_authenticated:
         for pet in pets:
-            pet.user_commented = Comment.objects.filter(
+            pet.user_commented = PetRating.objects.filter(
                 PetID=pet, 
                 UserID=request.user
             ).exists()
@@ -40,10 +40,10 @@ def top_pets(request):
     
     # Add comment information for each pet
     for pet in top_pets_list:
-        pet.user_commented = Comment.objects.filter(
+        pet.user_commented = PetRating.objects.filter(
             PetID=pet, 
             UserID=request.user
-        ).exists()
+        ).exclude(comment="").exists()
     
     # Add the top pets to the context dictionary and render the top pets template
     context = {
@@ -66,10 +66,10 @@ def categories(request):
     
     # Add comment information for each pet
     for pet in pets:
-        pet.user_commented = Comment.objects.filter(
+        pet.user_commented = PetRating.objects.filter(
             PetID=pet, 
             UserID=request.user
-        ).exists()
+        ).exclude(comment="").exists()
 
     # Add to the context dictionary the list of pets, types and selected type
     context = {
@@ -87,10 +87,10 @@ def bookmarks(request):
     
     # Add comment information for each bookmarked pet
     for pet in bookmarked_pets:
-        pet.user_commented = Comment.objects.filter(
+        pet.user_commented = PetRating.objects.filter(
             PetID=pet, 
             UserID=request.user
-        ).exists()
+        ).exclude(comment="").exists()
     
     # Add the bookmarked pets to the context dictionary and render the bookmarks template
     context = {
@@ -155,7 +155,8 @@ def profile(request, username=None):
         "viewed_user": viewed_user,
         "user_profile": user_profile,
         "pets": user_pets,
-        "is_owner": is_owner
+        "is_owner": is_owner,
+        "comment_form": CommentForm()
     } 
 
     return render(request, 'pets/profile.html', context)
@@ -265,162 +266,46 @@ def delete_pet(request, pet_id):
 
 # comments
 @login_required
-def add_comment(request, pet_id):
-    pet = get_object_or_404(Pet, id=pet_id)
-    
-    if Comment.objects.filter(PetID=pet, UserID=request.user).exists():
-        return JsonResponse({'error': 'You have already commented on this pet. Please edit your existing one.'}, status=400)
-    
-    if request.method == 'POST':
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            try:
-                data = json.loads(request.body)
-                content = data.get('content', '')
-            except:
-                content = request.POST.get('content', '')
-        else:
-            content = request.POST.get('content', '')
-        
-        if not content or len(content.strip()) == 0:
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                return JsonResponse({'error': 'Comment cannot be empty'}, status=400)
-            messages.error(request, 'Comment cannot be empty.')
-            return redirect('pets:home')
-        
-        if len(content) > 200:
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                return JsonResponse({'error': 'Comment is too long (max 200 characters)'}, status=400)
-            messages.error(request, 'Comment is too long (max 200 characters).')
-            return redirect('pets:home')
-        
-        comment = Comment(
-            PetID=pet,
-            UserID=request.user,
-            content=content.strip()
-        )
-        comment.save()
-        
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            return JsonResponse({
-                'success': True,
-                'comment': {
-                    'id': comment.id,
-                    'content': comment.content,
-                    'username': request.user.username,
-                    'created_at': comment.created_at.strftime('%B %d, %Y'),
-                    'is_owner': True
-                }
-            })
-        
-        messages.success(request, 'Your comment has been posted!')
-        return redirect('pets:home')
-    
-    return JsonResponse({'error': 'Invalid request method'}, status=405)
-
-@login_required
 def get_comments(request, pet_id):
     pet = get_object_or_404(Pet, id=pet_id)
-    comments = pet.comments.all() 
+    ratings = PetRating.objects.filter(PetID=pet).select_related('UserID')
+
+    user_comment = ratings.filter(UserID=request.user).first()
     
-    user_comment = comments.filter(UserID=request.user).first()
-    user_commented = user_comment is not None
-    
-    comments_data = []
-    for comment in comments:
-        comments_data.append({
-            'id': comment.id,
-            'username': comment.UserID.username,
-            'content': comment.content,
-            'created_at': comment.created_at.strftime('%B %d, %Y'),
-            'is_owner': comment.UserID == request.user
-        })
-    
+    comments_data = [{
+        'username': r.UserID.username,
+        'text': r.comment,
+        'date': r.rating_date.strftime("%b, %d, %Y"),
+        'is_owner': r.UserID == request.user
+    }for r in ratings if r.comment]
+
     return JsonResponse({
         'comments': comments_data,
-        'user_commented': user_commented,
-        'user_text' : user_comment.content if user_comment else "",
-        'user_comment_id': user_comment.id if user_comment else None,
-        'comments_count': len(comments_data)
+        'user_has_commented': user_comment is not None and bool(user_comment.comment),
+        'user_comment_text': user_comment.comment if user_comment else ""
     })
 
 @login_required
-def delete_comment(request, comment_id):
-    if request.method != 'POST':
-        return JsonResponse({'error': 'Method not allowed'}, status=405)
-    
-    comment = get_object_or_404(Comment, id=comment_id)
-    
-    if comment.UserID != request.user:
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            return JsonResponse({'error': 'You can only delete your own comments'}, status=403)
-        messages.error(request, 'You can only delete your own comments.')
-        return redirect('pets:home')
-    
-    pet_id = comment.PetID.id
-    comment.delete()
-    
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return JsonResponse({
-            'success': True,
-            'message': 'Comment deleted successfully',
-            'pet_id': pet_id
-        })
-    
-    messages.success(request, 'Your comment has been deleted.')
-    return redirect('pets:home')
-
-@login_required
-def edit_comment(request, comment_id):
-    comment = get_object_or_404(Comment, id=comment_id)
-    
-    if comment.UserID != request.user:
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            return JsonResponse({'error': 'You can only edit your own comments'}, status=403)
-        messages.error(request, 'You can only edit your own comments.')
-        return redirect('pets:home')
-    
+def post_comment(request, pet_id):
     if request.method == 'POST':
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            try:
-                data = json.loads(request.body)
-                new_content = data.get('content', '')
-            except:
-                new_content = request.POST.get('content', '')
-        else:
-            new_content = request.POST.get('content', '')
+        pet = get_object_or_404(Pet, id=pet_id)
+        text = request.POST.get('comment', '').strip()
+
+        if not text:
+            return JsonResponse({'error': 'Commment cannot be empty'}, status=400)
         
-        if not new_content or len(new_content.strip()) == 0:
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                return JsonResponse({'error': 'Comment cannot be empty'}, status=400)
-            messages.error(request, 'Comment cannot be empty.')
-            return redirect('pets:home')
-        
-        if len(new_content) > 200:
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                return JsonResponse({'error': 'Comment is too long (max 200 characters)'}, status=400)
-            messages.error(request, 'Comment is too long (max 200 characters).')
-            return redirect('pets:home')
-        
-        comment.content = new_content.strip()
-        comment.save()
-        
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            return JsonResponse({
-                'success': True,
-                'comment': {
-                    'id': comment.id,
-                    'content': comment.content,
-                    'username': request.user.username,
-                    'created_at': comment.created_at.strftime('%B %d, %Y'),
-                    'updated_at': comment.updated_at.strftime('%B %d, %Y'),
-                    'is_owner': True
-                }
-            })
-        
-        messages.success(request, 'Your comment has been updated.')
-        return redirect('pets:home')
-    
-    return JsonResponse({
-        'id': comment.id,
-        'content': comment.content
-    })
+        rating,created = PetRating.objects.update_or_create(
+            PetID=pet, UserID=request.user,
+            defaults={'comment':text}
+        )
+        return JsonResponse({'status': 'success','text': text})
+
+@login_required
+def delete_comment(request, pet_id):
+    if request.method == 'POST':
+        rating = PetRating.objects.filter(PetID=pet_id, UserID=request.user).first()
+        if rating:
+            rating.comment = ""
+            rating.save()
+            return JsonResponse({'status': 'deleted'})
+        return JsonResponse({'error': 'Invalid request'}, status=400)

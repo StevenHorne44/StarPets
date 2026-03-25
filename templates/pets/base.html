@@ -83,12 +83,16 @@
     <script>
         const BOOKMARK_URL = "{% url 'pets:toggle_bookmark' 0 %}".replace('0/', '');
         const RATE_URL = "{% url 'pets:rate_pet' 0 %}".replace('0/', '');
+        const CSRF_TOKEN = "{{ csrf_token }}";
+
+        const GET_COMMENTS_URL = "{% url 'pets:get_comments' 0 %}".replace('0/', '');
+        const POST_COMMENT_URL = "{% url 'pets:post_comment' 0 %}".replace('0/', '');
+        const DELETE_COMMENT_URL = "{% url 'pets:delete_comment' 0 %}".replace('0/', '');
     </script>
     <script src="{% static 'js/starpets.js' %}"></script>
     <script src="{% static 'js/comments.js' %}"></script>
     
     
-    {% block extra_js %}{% endblock %}
     
 </body>
 </html>
