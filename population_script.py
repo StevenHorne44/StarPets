@@ -6,7 +6,7 @@ import django
 django.setup()
 
 from django.contrib.auth.models import User 
-from pets.models import PetType, Pet, PetRating, UserProfile, Comment
+from pets.models import PetType, Pet, PetRating, UserProfile, Bookmark
 from django.db.models.signals import post_delete, pre_save
 from pets.signals import update_pet_average_rating, auto_delete_pet_file_on_delete
 import shutil
@@ -25,9 +25,11 @@ def populate():
    
     print("Cleaning database...")
     PetRating.objects.all().delete()
+    Bookmark.objects.all().delete()
+    UserProfile.objects.all().delete()
     Pet.objects.all().delete()
-    PetType.objects.all().delete()
     User.objects.exclude(is_superuser=True).delete()
+    PetType.objects.all().delete()
 
     pet_dict = {}
     petPopulationFolder = "population_pets"
@@ -113,15 +115,20 @@ def add_pet(pet_type, user, name, description, stars, photo_path):
     pet.picture = photo_path
     pet.save()
 
-    PetRating.objects.get_or_create(PetID=pet, UserID=user, stars=stars)
+    PetRating.objects.get_or_create(PetID=pet, UserID=user, defaults={'stars': stars})
     return pet
 
 def add_comment(pet, user, content):
-    comment, created = Comment.objects.get_or_create(PetID=pet, UserID=user)
-    comment.content = content
-    comment.save()
-    return comment
+    rating, created = PetRating.objects.get_or_create(
+        PetID=pet,
+        UserID=user,
+        defaults={'stars': 0}) #acts as "no rating"
 
+    if rating:
+        rating.comment = content
+        rating.save()
+    
+    
 
 if __name__ == '__main__':
     print("Starting StarPets population script...")

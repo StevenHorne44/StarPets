@@ -14,11 +14,10 @@ def update_pet_average_rating(sender, instance, **kwargs):
     pet = instance.PetID
     
     # Calculate the new average for this specific pet
-    avg_dict = pet.petrating_set.aggregate(Avg('stars'))
-    new_avg = avg_dict['stars__avg']
+    stats = PetRating.objects.filter(PetID=pet, stars__gt=0).aggregate(Avg('stars'))
     
     # If all ratings were deleted, new_avg will be None. Default back to 0.0.
-    pet.average_rating = new_avg if new_avg is not None else 0.0
+    pet.average_rating = stats['stars__avg'] or 0
     
     # Save the updated average to the db
     pet.save()
